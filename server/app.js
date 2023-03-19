@@ -3,6 +3,10 @@ const express = require('express'),
 
 const app = express();
 
+const userDao = require("./dao/userDao");
+const { pool } = require('./conf/db.config')
+console.log(pool);
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
@@ -19,13 +23,48 @@ app.all("*", function (req, res, next) {
         next();
 });
 
-app.post('/getUser', (req, res) => {
-    // const { } = req.body;
-    res.send({
-        errorNo: 0,
-        data: 'YEP'
-    });
+app.post('/addUser', (req, res) => {
+    let urlParam = req.body;
+    console.log(urlParam);
+    userDao.adduser(urlParam, r => {
+        if (r.code !== 200) {
+            res.send('注册用户失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                res.send('Number of records added: ' + r.data.affectedRows);
+                res.end();
+            } else {
+                res.send("用户名重复");
+                res.send();
+            }
+        }
+    })
 })
+
+app.post('/addCommentTable', (req, res) => {
+
+    let sql = `CREATE table ${req.query.workId}commenttable(pid int);`
+
+    pool.getConnection(function (err, connection) {
+        if (err) { throw err }
+        connection.query(sql, function (error, results, fields) {
+            connection.release();
+            let apiRes = {
+                code: 0,
+                msg: "成功",
+                data: results
+            }
+            res.send(apiRes);
+        })
+    })
+
+    // console.log(req.query.workId);
+    // res.send({ code: 200 });
+})
+
+
 
 app.listen('8081', () => {
     console.log('Server is running on PORT 8081');
