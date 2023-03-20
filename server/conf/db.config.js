@@ -9,7 +9,7 @@ let mysql_config = {
     user: 'root',
     password: '123456',
     database: database,
-    connectTimeout: 5000,
+    connectTimeout: 10000,
 };
 
 let pool = mysql.createPool(mysql_config);

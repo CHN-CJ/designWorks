@@ -4,8 +4,13 @@ const express = require('express'),
 const app = express();
 
 const userDao = require("./dao/userDao");
-const { pool } = require('./conf/db.config')
+const { pool } = require('./conf/db.config');
 console.log(pool);
+
+// 文件上传下载中间件
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -60,6 +65,57 @@ app.post('/findUsers', (req, res) => {
         }
     })
 })
+
+
+app.post('/upload', multer({
+    dest: 'upload'
+}).single('file'), (req, res) => {
+    // 新建文件夹
+    fs.mkdirSync(`./upload/${req.query.work_id}`);
+    // 更改存储路径
+    // req.file.originalname -> 源文件名+"."+后缀名
+    const newfileName = req.query.work_id + "." + req.file.originalname.split('.')[1];
+    fs.renameSync(req.file.path, `upload/${req.query.work_id}/${newfileName}`);
+    res.send(req.file);
+}
+)
+
+app.post('/uploads', multer({
+    dest: 'upload'
+}).array('file', 10), (req, res) => {
+    fs.mkdirSync(`./upload/${req.query.work_id}`);
+    let newfileName;
+    const files = req.files;
+    for (let i = 0; i < files.length; i++) {
+        const F = files[i];
+        newfileName = req.query.work_id + "_" + i + "." + F.originalname.split('.')[1];
+        fs.renameSync(F.path, `upload/${req.query.work_id}/${newfileName}`);
+    }
+    res.send(files);
+}
+)
+
+//单文件下载模块
+app.get('/download', (req, res) => {
+    const fileName = getFileName(`./upload/${req.query.work_id}`)
+    res.download(`upload/${req.query.work_id}/${fileName[0]}`);
+})
+
+//获取文件夹中的文件名
+function getFileName(dir) {
+    let fileName = [];
+    const stat = fs.statSync(dir)
+    //判断是不是目录
+    if (stat.isDirectory()) {
+        const dirs = fs.readdirSync(dir);
+        dirs.forEach(value => {
+            fileName.push(value);
+        })
+    } else if (stat.isFile()) {
+        return "dir is a file";
+    }
+    return fileName;
+}
 
 app.post('/addCommentTable', (req, res) => {
 
