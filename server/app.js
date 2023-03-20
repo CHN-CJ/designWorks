@@ -37,8 +37,26 @@ app.post('/addUser', (req, res) => {
                 res.end();
             } else {
                 res.send("用户名重复");
-                res.send();
+                res.end();
             }
+        }
+    })
+})
+
+app.post('/findUsers', (req, res) => {
+    console.log(req.body);
+    const { user_name, user_password } = req.body;
+    userDao.findUsers(r => {
+        if (r.code !== 200) {
+            res.send('查找用户信息失败');
+            res.end();
+        } else {
+            // console.log(r);
+            let data;
+            data = r.data.filter(d => d.user_name === user_name && d.user_password === user_password);
+            if (data.length == 1) res.send({ data: data[0], success: "success" });
+            else res.send("没有找到对应的用户");
+            res.end();
         }
     })
 })
