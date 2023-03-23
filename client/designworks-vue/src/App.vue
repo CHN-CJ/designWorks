@@ -1,4 +1,5 @@
 <template>
+  <img src="http://127.0.0.1:8081/server/upload/1/1.jpg">
 
 </template>
 
@@ -6,23 +7,44 @@
 import { onMounted } from 'vue'
 import axios from 'axios';
 
-onMounted(() =>{
-  axios.post('http://127.0.0.1:8081/getUser',{})
-  .then(res=> {
-    console.log(res);
+// 前端接受 zip 文件要以 blob 的方式
+// 这里创建了一个a标签并自动点击实现下载功能，并且及时释放内存
+onMounted(() => {
+  axios.get('/api/downloadZip?work_id=2', {
+    responseType: "blob",
+  })
+  .then((response) => {
+    let blob = new Blob([response.data], {type: "application/zip"});
+    let url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    //重命名文件
+    link.download = "pic.zip";
+    link.click();
+    //释放内存
+    URL.revokeObjectURL(url);
   }).catch(err => {
     console.log(err);
   })
 })
 
-onMounted(() =>{
-  axios.post('/api/getUser',{})
-  .then(res=> {
-    console.log(res);
-  }).catch(err => {
-    console.log(err);
-  })
-})
+// onMounted(() =>{
+//   axios.post('http://127.0.0.1:8081/getUser',{})
+//   .then(res=> {
+//     console.log(res);
+//   }).catch(err => {
+//     console.log(err);
+//   })
+// })
+
+// onMounted(() =>{
+//   axios.post('/api/getUser',{})
+//   .then(res=> {
+//     console.log(res);
+//   }).catch(err => {
+//     console.log(err);
+//   })
+// })
 
 
 </script>
@@ -33,7 +55,6 @@ onMounted(() =>{
   qs 序列化
   lodash 防抖
 */
-
 
 </style>
 

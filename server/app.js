@@ -5,12 +5,16 @@ const app = express();
 
 const userDao = require("./dao/userDao");
 const { pool } = require('./conf/db.config');
+const { getFileName, getTime } = require('./method');
 console.log(pool);
 
 // 文件上传下载中间件
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const zip = require('express-zip');
+app.use(express.static('upload'));
+// http://localhost:8081/1/1.jpg
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -101,42 +105,92 @@ app.get('/download', (req, res) => {
     res.download(`upload/${req.query.work_id}/${fileName[0]}`);
 })
 
-//获取文件夹中的文件名
-function getFileName(dir) {
-    let fileName = [];
-    const stat = fs.statSync(dir)
-    //判断是不是目录
-    if (stat.isDirectory()) {
-        const dirs = fs.readdirSync(dir);
-        dirs.forEach(value => {
-            fileName.push(value);
-        })
-    } else if (stat.isFile()) {
-        return "dir is a file";
+//前端下载zip文件
+app.get('/downloadZip', function (req, res) {
+    const work_id = req.query.work_id;
+    const fileName = getFileName(`./upload/${req.query.work_id}`);
+    let zipfile = [];
+    for (let i = 0; i < fileName.length; i++) {
+        zipfile.push({
+            path: `./upload/${work_id}/${fileName[i]}`,
+            name: `${fileName[i]}`
+        });
     }
-    return fileName;
-}
+    console.log(zipfile);
+    // res.zip([
+    //     { path: './upload/1/1.jpg', name: '1.jpg' }
+    // ]);
+    res.zip(zipfile);
+})
+
 
 app.post('/addCommentTable', (req, res) => {
+    // 评论 => 是以表单的形式发送的吗？
 
-    let sql = `CREATE table ${req.query.workId}commenttable(pid int);`
-
-    pool.getConnection(function (err, connection) {
-        if (err) { throw err }
-        connection.query(sql, function (error, results, fields) {
-            connection.release();
-            let apiRes = {
-                code: 0,
-                msg: "成功",
-                data: results
+    let params = {
+        comment_user_id: 1,
+        comment_text: "测试评论",
+        comment_work_id: 2,
+        comment_p_user_id: 0,
+        comment_date: getTime()
+    }
+    userDao.addComment(params, r => {
+        if (r.code !== 200) {
+            res.send('添加评论失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                res.send('Number of records added: ' + r.data.affectedRows);
             }
-            res.send(apiRes);
-        })
+            res.end();
+        }
     })
-
-    // console.log(req.query.workId);
-    // res.send({ code: 200 });
 })
+
+// 获取用户名的话还需要联表
+app.get('/getWorkComment', (req, res) => {
+    const work_id = req.query.work_id;
+    userDao.getWorkComment(work_id, r => {
+        if (r.code !== 200) {
+            res.send('查找作品评论失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                console.log(r.data);
+                // res.send('Number of records added: ' + r.data.affectedRows);
+                res.send(r.data);
+            }
+            res.end();
+        }
+    })
+})
+
+//点赞->获取评论id->点赞数+1
+//判断是否是当前用户的点赞->like_table
+
+
+// app.post('/addCommentTable', (req, res) => {
+
+//     let sql = `CREATE table ${req.query.workId}commenttable(pid int);`
+
+//     pool.getConnection(function (err, connection) {
+//         if (err) { throw err }
+//         connection.query(sql, function (error, results, fields) {
+//             connection.release();
+//             let apiRes = {
+//                 code: 0,
+//                 msg: "成功",
+//                 data: results
+//             }
+//             res.send(apiRes);
+//         })
+//     })
+
+//     // console.log(req.query.workId);
+//     // res.send({ code: 200 });
+// })
 
 
 
