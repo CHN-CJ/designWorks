@@ -1,7 +1,62 @@
 let { pool } = require("../conf/db.config");
-let { addUser, findUsers, addComment, getWorkComment } = require('./userMapper');
+let { addUser, findUsers, addComment, getWorkComment, addWorkId, addPicId, getPicId } = require('./userMapper');
 
 module.exports = {
+
+    getPicId: function (params, callback) {
+        let sqlparam = [
+            params.user_id,
+            params.work_pic_date
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(getPicId, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("获取pic_id err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+
+    addPicId: function (params, callback) {
+        let sqlparam = [
+            params.user_id,
+            params.work_pic_date
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(addPicId, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("添加pic_id err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+
+    addWorkId: function (params, callback) {
+        let sqlparam = params;
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(addWorkId, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("获取work_id err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+
     add: function (params, callback) {
         let sqlparam = [
             params.user_name,

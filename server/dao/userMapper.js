@@ -14,5 +14,10 @@ module.exports = {
     //更新点赞数
     updateCommentLikeNum: 'UPDATE designworks.comment_table SET comment_like_num = ? WHERE comment_id = ? ',
     //更新点赞表
-    addLike: 'INSERT INTO designworks.like_table (like_user_id, like_comment_id) VALUES (?, ?)'
+    addLike: 'INSERT INTO designworks.like_table (like_user_id, like_comment_id) VALUES (?, ?)',
+    addWorkId: 'INSERT INTO designworks.userdesignworks (user_id) VALUES (?) ',
+    //添加pic_id
+    addPicId: 'INSERT INTO designworks.pic_name (user_id, work_pic_date) VALUES (?, ?)',
+    //获取pic_id
+    getPicId: 'SELECT pic_id FROM designworks.pic_name where user_id = ? AND work_pic_date = ?'
 }

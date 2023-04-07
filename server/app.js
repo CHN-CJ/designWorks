@@ -32,6 +32,56 @@ app.all("*", function (req, res, next) {
         next();
 });
 
+//获取pic_id
+app.get('/getPicId', (req, res) => {
+    const params = {
+        user_id: req.query.user_id,
+        work_pic_date: req.query.work_pic_date
+    }
+    console.log(params);
+    userDao.getPicId(params, r => {
+        if (r.code !== 200) {
+            res.send('获取pic_id失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
+
+//添加pic_id
+app.get('/addPicId', (req, res) => {
+    const params = {
+        user_id: req.query.user_id,
+        work_pic_date: req.query.work_pic_date
+    }
+    console.log(params);
+    userDao.addPicId(params, r => {
+        if (r.code !== 200) {
+            res.send('添加pic_id失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                res.send('Number of records added: ' + r.data.affectedRows);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
 app.post('/addUser', (req, res) => {
     let urlParam = req.body;
     console.log(urlParam);
