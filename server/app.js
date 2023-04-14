@@ -59,7 +59,7 @@ app.get('/getPicId', (req, res) => {
 
 
 //添加pic_id
-app.get('/addPicId', (req, res) => {
+app.post('/addPicId', (req, res) => {
     const params = {
         user_id: req.query.user_id,
         work_pic_date: req.query.work_pic_date
@@ -70,8 +70,9 @@ app.get('/addPicId', (req, res) => {
             res.send('添加pic_id失败');
             res.end();
         } else {
-            console.log(r);
+            // console.log(r);
             if (r.data) {
+                console.log(r);
                 res.send('Number of records added: ' + r.data.affectedRows);
                 res.end();
             } else {
@@ -134,18 +135,61 @@ app.post('/upload', multer({
 }
 )
 
+app.get('/deleteFile', (req, res) => {
+    const dir = getFileName(`./upload/${req.query.pic_id}`);
+    const file_name = req.query.file_name;
+    let dir_name = dir.filter((value) => { if (value.indexOf(file_name) != -1) return value });
+    console.log(dir_name);
+    const url = `upload/${req.query.pic_id}/${dir_name}`;
+    console.log(url);
+    if (fs.existsSync(url)) {
+        fs.unlinkSync(url);
+        res.send({ data: 200 });
+    } else {
+        res.send({ data: 500 });
+    }
+})
+
 app.post('/uploads', multer({
     dest: 'upload'
 }).array('file', 10), (req, res) => {
-    fs.mkdirSync(`./upload/${req.query.work_id}`);
-    let newfileName;
-    const files = req.files;
-    for (let i = 0; i < files.length; i++) {
-        const F = files[i];
-        newfileName = req.query.work_id + "_" + i + "." + F.originalname.split('.')[1];
-        fs.renameSync(F.path, `upload/${req.query.work_id}/${newfileName}`);
+    const dir = `./upload/${req.query.pic_id}`;
+    if (fs.existsSync(dir)) {
+        let newfileName;
+        const files = req.files;
+        const stat = fs.statSync(dir)
+        if (stat.isDirectory()) {
+            const dirs = fs.readdirSync(dir);
+            let index = 0;
+            dirs.forEach((value) => {
+                // console.log(value);
+                // index = value.slice('_')[1];
+                index = value.split('_')[1];
+                console.log(index);
+            })
+            index++;
+            for (let i = 0; i < files.length; i++) {
+                const F = files[i];
+                // newfileName = req.query.pic_id + "_" + index + '.' + F.originalname.split('.')[1];
+                newfileName = req.query.pic_id + "_" + index + '_' + F.originalname;
+                fs.renameSync(F.path, `upload/${req.query.pic_id}/${newfileName}`);
+                index++;
+            }
+            res.send(files);
+        }
+    } else {
+        fs.mkdirSync(dir);
+        let newfileName;
+        const files = req.files;
+        for (let i = 0; i < files.length; i++) {
+            const F = files[i];
+            // newfileName = req.query.pic_id + "_" + i + "." + F.originalname.split('.')[1];
+            newfileName = req.query.pic_id + "_" + i + "_" + F.originalname;
+            fs.renameSync(F.path, `upload/${req.query.pic_id}/${newfileName}`);
+        }
+        res.send(files);
+
     }
-    res.send(files);
 }
 )
 

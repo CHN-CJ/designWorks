@@ -2,11 +2,10 @@
   <!-- <div class="opening-animation">  
   <openingAnimation></openingAnimation>
 </div> -->
-  <div>
-    <!-- <signInUp></signInUp> -->
-    <!-- <uploadFile></uploadFile> -->
-    <tryWatermark></tryWatermark>
-  </div>
+  <!-- <signInUp></signInUp> -->
+  <uploadFile></uploadFile>
+  <!-- <tryWatermark></tryWatermark> -->
+  <!-- <showFile></showFile> -->
 
   <!-- <router-link to="/open">Go to opening</router-link>
 <router-view></router-view> -->
@@ -20,6 +19,7 @@ import openingAnimation from "./views/opening-animation.vue";
 import signInUp from "./views/sign-in-up.vue";
 import uploadFile from "./views/upload-file.vue";
 import tryWatermark from "./views/try-watermark.vue";
+import showFile from "./views/show-file.vue";
 
 // 前端接受 zip 文件要以 blob 的方式
 // 这里创建了一个a标签并自动点击实现下载功能，并且及时释放内存
@@ -67,6 +67,10 @@ import tryWatermark from "./views/try-watermark.vue";
   qs 序列化
   lodash 防抖
 */
+
+body {
+  margin: 0;
+}
 
 * {
   margin: 0;
