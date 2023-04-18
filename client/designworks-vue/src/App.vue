@@ -3,9 +3,13 @@
   <openingAnimation></openingAnimation>
 </div> -->
   <!-- <signInUp></signInUp> -->
-  <uploadFile></uploadFile>
+  <!-- <uploadFile></uploadFile> -->
   <!-- <tryWatermark></tryWatermark> -->
   <!-- <showFile></showFile> -->
+  <!-- <div>
+    <LoginRegister></LoginRegister>
+  </div> -->
+  <loginRegister></loginRegister>
 
   <!-- <router-link to="/open">Go to opening</router-link>
 <router-view></router-view> -->
@@ -20,6 +24,7 @@ import signInUp from "./views/sign-in-up.vue";
 import uploadFile from "./views/upload-file.vue";
 import tryWatermark from "./views/try-watermark.vue";
 import showFile from "./views/show-file.vue";
+import loginRegister from "./views/login-register.vue";
 
 // 前端接受 zip 文件要以 blob 的方式
 // 这里创建了一个a标签并自动点击实现下载功能，并且及时释放内存

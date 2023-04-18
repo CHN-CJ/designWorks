@@ -1,6 +1,8 @@
 module.exports = {
-    addUser: "INSERT INTO designworks.user(user_name, user_password) VALUES (?, ?);",
-    findUsers: "SELECT * FROM designworks.user",
+    addHead: "INSERT INTO designworks.t_headpicture(user_id, head_pic) VALUES (?, ?)",
+    addUser: "INSERT INTO designworks.t_user(user_name, user_password, user_email) VALUES (?, ?, ?);",
+    // getUserId: 
+    findUsers: "SELECT * FROM designworks.t_user",
     addComment: `INSERT INTO designworks.comment_table
     (comment_user_id, comment_text, comment_work_id, comment_p_user_id, comment_date, comment_like_num)
     VALUES (?, ?, ?, ?, ?, 0)`,

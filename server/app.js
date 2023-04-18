@@ -32,6 +32,50 @@ app.all("*", function (req, res, next) {
         next();
 });
 
+app.post('/getUserId', (req, res) => {
+    const { user_name, user_password, user_email } = req.body;
+    console.log(req.body);
+    userDao.getUserId(r => {
+        if (r.code !== 200) {
+            res.send('查找用户信息失败');
+            res.end();
+        } else {
+            console.log(r);
+            let data;
+            // if (r.data.length() == 0) r.data = [];
+            data = r.data.filter(d => d.user_name === user_name && d.user_password === user_password && d.user_email === user_email);
+            if (data.length == 1) res.send({ user_id: data[0].user_id, success: "success" });
+            else res.send("没有找到对应的用户");
+            res.end();
+        }
+    })
+})
+
+//添加头像
+app.post('/addHead', (req, res) => {
+    const params = {
+        user_id: req.query.user_id,
+        head_pic: "/headPic/default.png"
+    }
+    console.log(params);
+    userDao.addHead(params, r => {
+        if (r.code !== 200) {
+            res.send('addHead失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
 //获取pic_id
 app.get('/getPicId', (req, res) => {
     const params = {
@@ -85,15 +129,19 @@ app.post('/addPicId', (req, res) => {
 
 app.post('/addUser', (req, res) => {
     let urlParam = req.body;
-    console.log(urlParam);
+    // console.log(urlParam);
     userDao.adduser(urlParam, r => {
         if (r.code !== 200) {
             res.send('注册用户失败');
             res.end();
         } else {
-            console.log(r);
+            // console.log(r);
             if (r.data) {
-                res.send('Number of records added: ' + r.data.affectedRows);
+                // res.send('Number of records added: ' + r.data.affectedRows);
+                res.send({
+                    'insertId': r.data.insertId,
+                    'Number of records added': r.data.affectedRows
+                });
                 res.end();
             } else {
                 res.send("用户名重复");
@@ -111,8 +159,9 @@ app.post('/findUsers', (req, res) => {
             res.send('查找用户信息失败');
             res.end();
         } else {
-            // console.log(r);
+            console.log(r);
             let data;
+            // if (r.data.length() == 0) r.data = [];
             data = r.data.filter(d => d.user_name === user_name && d.user_password === user_password);
             if (data.length == 1) res.send({ data: data[0], success: "success" });
             else res.send("没有找到对应的用户");
@@ -131,6 +180,19 @@ app.post('/upload', multer({
     // req.file.originalname -> 源文件名+"."+后缀名
     const newfileName = req.query.work_id + "." + req.file.originalname.split('.')[1];
     fs.renameSync(req.file.path, `upload/${req.query.work_id}/${newfileName}`);
+    res.send(req.file);
+}
+)
+
+app.post('/addHeadPic', multer({
+    dest: 'headPic'
+}).single('file'), (req, res) => {
+    // 新建文件夹
+    fs.mkdirSync(`./headPic/${req.query.user_id}`);
+    // 更改存储路径
+    // req.file.originalname -> 源文件名+"."+后缀名
+    const newfileName = req.query.work_id + "." + req.file.originalname.split('.')[1];
+    fs.renameSync(req.file.path, `upload/${req.query.user_id}/${newfileName}`);
     res.send(req.file);
 }
 )

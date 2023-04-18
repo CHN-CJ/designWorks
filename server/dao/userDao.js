@@ -1,7 +1,41 @@
 let { pool } = require("../conf/db.config");
-let { addUser, findUsers, addComment, getWorkComment, addWorkId, addPicId, getPicId } = require('./userMapper');
+let { addUser, findUsers, addComment, getWorkComment, addWorkId, addPicId, getPicId, addHead, getUserId } = require('./userMapper');
 
 module.exports = {
+
+    getUserId: function (callback) {
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(findUsers, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("查找用户err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+
+    addHead: function (params, callback) {
+        let sqlparam = [
+            params.user_id,
+            params.head_pic
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(addHead, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("addHead err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
 
     getPicId: function (params, callback) {
         let sqlparam = [
@@ -74,7 +108,8 @@ module.exports = {
     adduser: function (params, callback) {
         let sqlparam = [
             params.user_name,
-            params.user_password
+            params.user_password,
+            params.user_email
         ];
         pool.getConnection((err, connection) => {
             if (err) { throw err; };
@@ -84,6 +119,7 @@ module.exports = {
                     console.log("添加用户err");
                     throw err;
                 }
+                console.log(result);
                 callback({ code: 200, data: result });
             })
             connection.release();
