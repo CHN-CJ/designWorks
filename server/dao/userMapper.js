@@ -1,4 +1,7 @@
 module.exports = {
+    getHead: "SELECT head_pic FROM designworks.t_headpicture where user_id = ?",
+    changeHead: "update designworks.t_headpicture set head_pic = (?) where user_id= (?) ",
+    getAllPic: "SELECT * from designworks.t_allpic",
     addHead: "INSERT INTO designworks.t_headpicture(user_id, head_pic) VALUES (?, ?)",
     addUser: "INSERT INTO designworks.t_user(user_name, user_password, user_email) VALUES (?, ?, ?);",
     // getUserId: 

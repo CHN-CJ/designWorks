@@ -15,6 +15,7 @@
             <el-option label="插画设计" value="illustration"></el-option>
             <el-option label="字体设计" value="font"></el-option>
             <el-option label="UI设计" value="ui"></el-option>
+            <el-option label="其他" value="other"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="添加水印">
@@ -80,6 +81,7 @@ id | user_id | pic_time
 import { onMounted } from "vue";
 import { ref, reactive } from "vue";
 import axios from "axios";
+import store from "../vuex/store.js";
 let user_id;
 let work_pic_date;
 const state = reactive({
@@ -100,9 +102,9 @@ const onSubmit = () => {
   console.log("submit!");
 };
 onMounted(async () => {
-  user_id = 4;
+  user_id = store.state.user_id;
   work_pic_date = getTime();
-  console.log(await addPicId(user_id, work_pic_date));
+  await addPicId(user_id, work_pic_date);
   await getPicId(user_id, work_pic_date);
   console.log(pic_id.value);
   state.url = state.url + "=" + pic_id.value;
@@ -206,7 +208,7 @@ function getTime() {
     padding: 30px;
     line-height: 1.5715;
     background-color: #fff;
-    border-radius: 16px;
+    border-radius: 18px;
     margin-top: 20px;
   }
   .upload_file {
@@ -218,8 +220,7 @@ function getTime() {
     border: 0;
     line-height: 1.5715;
     background-color: #fff;
-    border-radius: 12px;
-
+    border-radius: 18px;
     .upload-demo {
       width: 100%;
       height: 100%;

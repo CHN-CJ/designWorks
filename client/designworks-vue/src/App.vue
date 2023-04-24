@@ -1,22 +1,31 @@
 <template>
   <!-- <div class="opening-animation">  
   <openingAnimation></openingAnimation>
-</div> -->
-  <!-- <signInUp></signInUp> -->
+  <signInUp></signInUp> -->
   <!-- <uploadFile></uploadFile> -->
   <!-- <tryWatermark></tryWatermark> -->
-  <!-- <showFile></showFile> -->
-  <!-- <div>
+  <!-- <showFile></showFile>
     <LoginRegister></LoginRegister>
-  </div> -->
-  <loginRegister></loginRegister>
+
+</div> -->
+
+  <div>
+    <!-- <homePage
+      @login-register="(changeflag) => (flag.value = changeflag)"
+      v-if="flag.value"
+    ></homePage>
+    <loginRegister v-else></loginRegister> -->
+    <homePage></homePage>
+    <!-- <showMessage></showMessage> -->
+  </div>
+  <!-- <allPic></allPic> -->
 
   <!-- <router-link to="/open">Go to opening</router-link>
 <router-view></router-view> -->
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import axios from "axios";
 
 import openingAnimation from "./views/opening-animation.vue";
@@ -25,6 +34,15 @@ import uploadFile from "./views/upload-file.vue";
 import tryWatermark from "./views/try-watermark.vue";
 import showFile from "./views/show-file.vue";
 import loginRegister from "./views/login-register.vue";
+import homePage from "./views/home-page.vue";
+import allPic from "./views/allPic.vue";
+import showMessage from "./views/show-message.vue";
+
+const flag = ref(true);
+
+const toLogin = (changeflag) => {
+  flag.value = changeflag;
+};
 
 // 前端接受 zip 文件要以 blob 的方式
 // 这里创建了一个a标签并自动点击实现下载功能，并且及时释放内存

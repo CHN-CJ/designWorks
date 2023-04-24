@@ -14,6 +14,7 @@ const fs = require('fs');
 const path = require('path');
 const zip = require('express-zip');
 app.use(express.static('upload'));
+app.use(express.static(__dirname));
 // http://localhost:8081/1/1.jpg
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,6 +32,77 @@ app.all("*", function (req, res, next) {
     else
         next();
 });
+
+app.get('/getHead', (req, res) => {
+    let params = {
+        user_id: req.query.user_id
+    }
+    console.log(params);
+    userDao.getHead(params, r => {
+        if (r.code !== 200) {
+            res.send('addHead失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
+app.post('/changeHead', (req, res) => {
+    let params = {
+        head_pic: req.query.head_pic,
+        user_id: req.query.user_id
+    }
+    console.log(params);
+    userDao.changeHead(params, r => {
+        if (r.code !== 200) {
+            res.send('addHead失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
+app.get('/getAllPic', (req, res) => {
+    userDao.getAllPic(r => {
+        if (r.code != 200) {
+            res.send('获取图片失败');
+            res.end();
+        } else {
+            console.log(r);
+            let data = r.data.map(item => item);
+            for (let i = 0; i < data.length; i++) {
+                let id = data[i].works_pic_id;
+                console.log(id);
+                const dirs = fs.readdirSync(`./upload/${id}`);
+                for (let j = 0; j < dirs.length; j++) {
+                    data[i].picName = dirs[0];
+                    break;
+                }
+            }
+            console.log(data);
+            res.send(data);
+            res.end();
+        }
+    })
+})
 
 app.post('/getUserId', (req, res) => {
     const { user_name, user_password, user_email } = req.body;
@@ -53,7 +125,7 @@ app.post('/getUserId', (req, res) => {
 
 //添加头像
 app.post('/addHead', (req, res) => {
-    const params = {
+    let params = {
         user_id: req.query.user_id,
         head_pic: "/headPic/default.png"
     }
@@ -187,13 +259,21 @@ app.post('/upload', multer({
 app.post('/addHeadPic', multer({
     dest: 'headPic'
 }).single('file'), (req, res) => {
-    // 新建文件夹
-    fs.mkdirSync(`./headPic/${req.query.user_id}`);
-    // 更改存储路径
-    // req.file.originalname -> 源文件名+"."+后缀名
-    const newfileName = req.query.work_id + "." + req.file.originalname.split('.')[1];
-    fs.renameSync(req.file.path, `upload/${req.query.user_id}/${newfileName}`);
-    res.send(req.file);
+    const dir = `./headPic/${req.query.user_id}`;
+    // 如果存在文件夹
+    if (fs.existsSync(dir)) {
+        const newfileName = req.file.originalname;
+        fs.renameSync(req.file.path, `headPic/${req.query.user_id}/${newfileName}`);
+        res.send(req.file);
+    } else {
+        // 新建文件夹
+        fs.mkdirSync(`./headPic/${req.query.user_id}`);
+        // 更改存储路径
+        // req.file.originalname -> 源文件名+"."+后缀名
+        const newfileName = req.query.work_id + "." + req.file.originalname.split('.')[1];
+        fs.renameSync(req.file.path, `headPic/${req.query.user_id}/${newfileName}`);
+        res.send(req.file);
+    }
 }
 )
 

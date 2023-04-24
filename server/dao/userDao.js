@@ -1,7 +1,56 @@
 let { pool } = require("../conf/db.config");
-let { addUser, findUsers, addComment, getWorkComment, addWorkId, addPicId, getPicId, addHead, getUserId } = require('./userMapper');
+let { addUser, findUsers, addComment, getWorkComment, addWorkId, addPicId, getPicId, addHead, getUserId, getAllPic, changeHead, getHead } = require('./userMapper');
 
 module.exports = {
+    getHead: function (params, callback) {
+        let sqlparam = [
+            params.user_id
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(getHead, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("changesHead err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    changeHead: function (params, callback) {
+        let sqlparam = [
+            params.head_pic,
+            params.user_id
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(changeHead, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("changesHead err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    getAllPic: function (callback) {
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(getAllPic, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("获取所有图片 err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
 
     getUserId: function (callback) {
         pool.getConnection((err, connection) => {

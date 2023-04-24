@@ -1,69 +1,74 @@
 <template>
-  <div class="login_register">
-    <div class="form-structor">
-      <div class="signup">
-        <h2 class="form-title" id="signup"><span>or</span>Sign up</h2>
+  <!-- <div class="login_register"> -->
+  <div class="form-structor">
+    <div class="signup">
+      <h2 class="form-title" id="signup"><span>or</span>Sign up</h2>
+      <div class="form-holder">
+        <input
+          type="text"
+          class="input"
+          placeholder="Name"
+          v-model="register.user_name"
+        />
+        <input
+          type="email"
+          class="input"
+          placeholder="Email"
+          v-model="register.user_email"
+        />
+        <input
+          type="password"
+          class="input"
+          placeholder="Password"
+          v-model="register.user_password"
+        />
+      </div>
+      <button class="submit-btn" @click="registerUser()">Sign up</button>
+    </div>
+    <div class="login slide-up">
+      <div class="center">
+        <h2 class="form-title" id="login"><span>or</span>Log in</h2>
         <div class="form-holder">
           <input
             type="text"
             class="input"
-            placeholder="Name"
-            v-model="register.user_name"
-          />
-          <input
-            type="email"
-            class="input"
-            placeholder="Email"
-            v-model="register.user_email"
+            placeholder="Username"
+            v-model="login.user_name"
           />
           <input
             type="password"
             class="input"
             placeholder="Password"
-            v-model="register.user_password"
+            v-model="login.user_password"
           />
         </div>
-        <button class="submit-btn" @click="registerUser()">Sign up</button>
-      </div>
-      <div class="login slide-up">
-        <div class="center">
-          <h2 class="form-title" id="login"><span>or</span>Log in</h2>
-          <div class="form-holder">
-            <input
-              type="text"
-              class="input"
-              placeholder="Username"
-              v-model="login.user_name"
-            />
-            <input
-              type="password"
-              class="input"
-              placeholder="Password"
-              v-model="login.user_password"
-            />
-          </div>
-          <button class="submit-btn" @click="loginUser">Log in</button>
-        </div>
+        <button class="submit-btn" @click="loginUser()">Log in</button>
       </div>
     </div>
   </div>
+  <!-- </div> -->
 </template>
 
 <script setup>
 import axios from "axios";
 import store from "../vuex/store.js";
-import { onMounted } from "vue";
+import { onMounted, onUpdated } from "vue";
 import { reactive, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
 
 onMounted(() => {
-  console.clear();
+  // console.clear();
 
   const loginBtn = document.getElementById("login");
   const signupBtn = document.getElementById("signup");
 
   loginBtn.addEventListener("click", (e) => {
     let parent = e.target.parentNode.parentNode;
-    Array.from(e.target.parentNode.parentNode.classList).find((element) => {
+    let arrayList = Array.from(e.target.parentNode.parentNode.classList);
+    if (arrayList.length < 2) return;
+    arrayList.find((element) => {
+      console.log(element);
       if (element !== "slide-up") {
         parent.classList.add("slide-up");
       } else {
@@ -75,7 +80,9 @@ onMounted(() => {
 
   signupBtn.addEventListener("click", (e) => {
     let parent = e.target.parentNode;
-    Array.from(e.target.parentNode.classList).find((element) => {
+    let classArray = Array.from(e.target.parentNode.classList);
+    if (classArray.length < 2) return;
+    classArray.find((element) => {
       if (element !== "slide-up") {
         parent.classList.add("slide-up");
       } else {
@@ -152,6 +159,8 @@ const loginUser = async () => {
     });
 
   await store.commit("initUser", user);
+
+  router.push("./");
 };
 </script>
  
@@ -160,9 +169,10 @@ const loginUser = async () => {
 @import url("https://fonts.googleapis.com/css?family=Fira+Sans");
 
 .login_register {
-  position: relative;
+  // position: relative;
   width: 100vw;
-  min-height: 100vh;
+  // height: 100%;
+  // min-height: 100vh;
   background-color: #e1e8ee;
   display: flex;
   align-items: center;
@@ -177,8 +187,11 @@ const loginUser = async () => {
   border-radius: 15px;
   height: 550px;
   width: 350px;
-  position: relative;
+  position: absolute;
   overflow: hidden;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
   &::after {
     content: "";
