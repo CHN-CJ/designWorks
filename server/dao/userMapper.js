@@ -1,4 +1,7 @@
 module.exports = {
+    addComment: "INSERT INTO designworks.t_comment (comment_user_id, comment_text, comment_work_id, comment_pid, comment_date, comment_like_num) VALUES (?, ?, ?, ?, ?, ?)",
+    getCommentSet: "SELECT * FROM designworks.t_commentset WHERE comment_work_id = ?",
+    getWork: "SELECT * FROM designworks.t_filemessage WHERE works_id = ?",
     getHead: "SELECT head_pic FROM designworks.t_headpicture where user_id = ?",
     changeHead: "update designworks.t_headpicture set head_pic = (?) where user_id= (?) ",
     getAllPic: "SELECT * from designworks.t_allpic",
@@ -6,9 +9,6 @@ module.exports = {
     addUser: "INSERT INTO designworks.t_user(user_name, user_password, user_email) VALUES (?, ?, ?);",
     // getUserId: 
     findUsers: "SELECT * FROM designworks.t_user",
-    addComment: `INSERT INTO designworks.comment_table
-    (comment_user_id, comment_text, comment_work_id, comment_p_user_id, comment_date, comment_like_num)
-    VALUES (?, ?, ?, ?, ?, 0)`,
     //comment_id 作为标识
     getWorkComment: `SELECT comment_id comment_user_id, comment_text, comment_p_user_id, comment_date, comment_like_num
     FROM designworks.comment_table where comment_work_id = ?`,

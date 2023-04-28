@@ -4,7 +4,7 @@ import { createStore } from 'vuex'
 const store = createStore({
     state() {
         return {
-            user_id: 101,
+            user_id: 74,
             user_name: 'dundundun1'
         }
     },

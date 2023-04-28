@@ -33,19 +33,94 @@ app.all("*", function (req, res, next) {
         next();
 });
 
+app.post('/addComment', (req, res) => {
+    let Params = req.body;
+    // console.log(urlParam);
+    userDao.addComment(Params, r => {
+        if (r.code !== 200) {
+            res.send('添加失败');
+            res.end();
+        } else {
+            // console.log(r);
+            if (r.data) {
+                // res.send('Number of records added: ' + r.data.affectedRows);
+                res.send({
+                    'insertId': r.data.insertId,
+                    'Number of records added': r.data.affectedRows
+                });
+                res.end();
+            } else {
+                res.send("用户名重复");
+                res.end();
+            }
+        }
+    })
+}),
+
+    app.get('/getCommentSet', (req, res) => {
+        let params = {
+            works_id: req.query.works_id
+        }
+        // console.log(params);
+        userDao.getCommentSet(params, r => {
+            if (r.code !== 200) {
+                res.send('addHead失败');
+                res.end();
+            } else {
+                // console.log(r);
+                if (r.data) {
+                    // console.log(r.data);
+                    res.send(r.data);
+                    res.end();
+                } else {
+                    res.send("failed");
+                    res.end();
+                }
+            }
+        })
+    })
+
+app.get('/getWork', (req, res) => {
+    let params = {
+        works_id: req.query.works_id
+    }
+    console.log(params);
+    userDao.getWork(params, r => {
+        if (r.code !== 200) {
+            res.send('addHead失败');
+            res.end();
+        } else {
+            // console.log(r);
+            if (r.data) {
+                console.log(r.data[0].works_pic_id);
+                const dir = getFileName(`./upload/${r.data[0].works_pic_id}`);
+                for (let i = 0; i < dir.length; i++) {
+                    dir[i] = `/upload/${r.data[0].works_pic_id}/${dir[i]}`;
+                }
+                r.data[0].dirPic = dir;
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
 app.get('/getHead', (req, res) => {
     let params = {
         user_id: req.query.user_id
     }
-    console.log(params);
+    // console.log(params);
     userDao.getHead(params, r => {
         if (r.code !== 200) {
             res.send('addHead失败');
             res.end();
         } else {
-            console.log(r);
+            // console.log(r);
             if (r.data) {
-                console.log(r.data);
+                // console.log(r.data);
                 res.send(r.data);
                 res.end();
             } else {
@@ -86,18 +161,18 @@ app.get('/getAllPic', (req, res) => {
             res.send('获取图片失败');
             res.end();
         } else {
-            console.log(r);
+            // console.log(r);
             let data = r.data.map(item => item);
             for (let i = 0; i < data.length; i++) {
                 let id = data[i].works_pic_id;
-                console.log(id);
+                // console.log(id);
                 const dirs = fs.readdirSync(`./upload/${id}`);
                 for (let j = 0; j < dirs.length; j++) {
                     data[i].picName = dirs[0];
                     break;
                 }
             }
-            console.log(data);
+            // console.log(data);
             res.send(data);
             res.end();
         }
@@ -137,7 +212,7 @@ app.post('/addHead', (req, res) => {
         } else {
             console.log(r);
             if (r.data) {
-                console.log(r.data);
+                // console.log(r.data);
                 res.send(r.data);
                 res.end();
             } else {

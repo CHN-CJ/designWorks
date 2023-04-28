@@ -10,7 +10,13 @@
       <div class="type" @click="changepicArray('other')">其他</div>
     </div>
     <div id="pic_block">
-      <div class="pic_content" v-for="(item, index) in picArray" :key="index">
+      <!-- <a target="_blank" href="http://localhost:8080/showFile"> -->
+      <div
+        class="pic_content"
+        v-for="(item, index) in picArray"
+        :key="index"
+        @click="toShowFile(item.works_id)"
+      >
         <div class="box_pic">
           <img
             class="home_pic"
@@ -33,13 +39,20 @@
           </div>
         </div>
       </div>
+      <!-- </a> -->
     </div>
   </div>
 </template>
 
 <script setup>
+/**
+ * 如果想要将内容全屏展示，那么需要动态组件切换
+ *
+ */
 import axios from "axios";
 import { onMounted, ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+const router = useRouter();
 
 const picArray = ref([]);
 const Array = ref([1, 2, 3]);
@@ -109,6 +122,10 @@ const onLoad = () => {
   container.style.height = `${max}px`;
 };
 
+const toShowFile = (works_id) => {
+  router.push(`./showFile/${works_id}`);
+};
+
 const changepicArray = async (type) => {
   if (type == "") {
     // 点击全部时，在重新进行一次请求
@@ -123,6 +140,15 @@ const changepicArray = async (type) => {
         console.log(err);
       });
     typeArray = picArray.value;
+
+    // const container = document.querySelector("#pic_block");
+    // const images = container.querySelectorAll("img");
+    // images.forEach((image) => {
+    //   image.onload = () => {
+    //     onLoad();
+    //   };
+    // });
+    onLoad();
   } else {
     picArray.value = typeArray;
     picArray.value = picArray.value.filter((item) => item.works_type === type);

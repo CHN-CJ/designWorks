@@ -23,7 +23,7 @@
 <script setup></script>
 
 <style lang="scss" scoped>
-@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");
+// @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");
 $width: 40;
 $height: 40;
 

@@ -6,13 +6,14 @@ let setWatermark = (strOne, strTwo) => {
     //页面布局 给 img 外层添加个div，id = waterMarkOut;
     if (waterMarkOut) {
         if (document.getElementById(id) !== null) {
-            document.body.removeChild(document.getElementById(id));
+            // document.body.removeChild(document.getElementById(id));
+            document.getElementById(id).remove();
         }
 
         let canvas = document.createElement('canvas');
         // 设置canvas画布大小
-        canvas.width = 150;
-        canvas.height = 100;
+        canvas.width = 170;
+        canvas.height = 120;
 
         let cans = canvas.getContext('2d');
         //水印旋转角度
@@ -27,7 +28,7 @@ let setWatermark = (strOne, strTwo) => {
         let div = document.createElement('div');
         div.id = id;
         div.style.pointerEvents = 'none';
-        div.style.top = '40px';
+        div.style.top = '20px';
         div.style.left = '0px';
         div.style.position = 'absolute';
         div.style.zIndex = '100000';

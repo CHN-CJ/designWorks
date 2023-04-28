@@ -1,14 +1,4 @@
 <template>
-  <!-- <div class="opening-animation">  
-  <openingAnimation></openingAnimation>
-  <signInUp></signInUp> -->
-  <!-- <uploadFile></uploadFile> -->
-  <!-- <tryWatermark></tryWatermark> -->
-  <!-- <showFile></showFile>
-    <LoginRegister></LoginRegister>
-
-</div> -->
-
   <div>
     <!-- <homePage
       @login-register="(changeflag) => (flag.value = changeflag)"
@@ -16,15 +6,16 @@
     ></homePage>
     <loginRegister v-else></loginRegister> -->
     <homePage></homePage>
-    <!-- <showMessage></showMessage> -->
   </div>
-  <!-- <allPic></allPic> -->
-
   <!-- <router-link to="/open">Go to opening</router-link>
 <router-view></router-view> -->
 </template>
 
 <script setup>
+/*
+ * 将homePage包起来，形成另一个组件
+ * 组件动态切换
+ */
 import { onMounted, ref } from "vue";
 import axios from "axios";
 

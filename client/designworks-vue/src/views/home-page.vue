@@ -104,7 +104,7 @@ watch(
 );
 
 const toAllPic = () => {
-  router.push("./allPic");
+  router.push("/allPic");
 };
 
 const toUpload = () => {

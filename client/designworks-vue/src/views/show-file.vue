@@ -6,12 +6,23 @@
     /> -->
   <div>
     <div class="content_box">
-      <div class="img_box">
-        <img :src="i" alt="" v-for="(i, idx) in array" :key="idx" />
+      <div class="img_box" id="waterMarkOut">
+        <img
+          class="img_watermark"
+          :src="i"
+          alt=""
+          v-for="(i, idx) in imageUrl"
+          :key="idx"
+          style="display: block"
+        />
       </div>
-      <div class="user_box">
-        <h3>芝士球海报设计</h3>
-        <div v-if="true" class="user_desc">作品描述，可以没有</div>
+      <div
+        class="watermark"
+        style="width: 400px; height: 500px; display: none"
+      ></div>
+      <div class="user_box" v-if="message.works_name != ''">
+        <h3>{{ message.works_name }}</h3>
+        <div v-if="true" class="user_desc"></div>
         <div class="user_detail">用户信息</div>
         <div class="btn_function">
           <button>
@@ -89,15 +100,261 @@
         </div>
       </div>
     </div>
+    <!-- <comment></comment> -->
+    <div>
+      <p>
+        <textarea v-model="state.commentText"></textarea>
+      </p>
+      <p>
+        <button @click="addComment">提交评论</button>
+      </p>
+    </div>
+    <div>
+      <ul>
+        <comment :data="state.commentTree" @add-reply="addReply"></comment>
+      </ul>
+    </div>
   </div>
 </template>
 
 
 <script setup>
-const array = [
-  "http://localhost:8081/1/wje.jpg",
-  "http://localhost:8081/1/e6a085570e5620ee2946262e73d0f6cd3bb75ea73e4493-24EBgE_fw658webp.webp",
-];
+import axios from "axios";
+import { onMounted, reactive, ref, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import store from "../vuex/store.js";
+import { removeWatermark, setWaterMark } from "../common/watermark";
+import comment from "./comment.vue";
+
+const router = useRouter();
+const route = useRoute();
+
+const message = reactive({
+  dirPic: [],
+  head_pic: "",
+  user_id: store.state.user_id,
+  user_name: "",
+  works_date: "",
+  works_mark: 0,
+  works_name: "",
+  works_owner: "",
+  works_pic_id: 0,
+  works_type: "",
+  works_view: 0,
+  works_writer: "",
+});
+const state = reactive({
+  commentText: "",
+  commentTree: null,
+});
+const imageUrl = ref([]);
+
+const screenWidth = ref(0);
+
+onMounted(async () => {
+  console.log(route.params.works_id);
+  await axios
+    .get(`/api/getWork?works_id=${route.params.works_id}`)
+    .then((res) => {
+      // console.log(res);
+      for (let key in res.data[0]) {
+        message[key] = res.data[0][key]; // foo, bar
+        // console.log(res.data[0][key]);
+      }
+      // console.log(message);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  for (let i = 0; i < message.dirPic.length; i++) {
+    imageUrl.value.push("http://localhost:8081" + message.dirPic[i]);
+  }
+  console.log(imageUrl.value);
+
+  setTimeout(() => {
+    const images = document.getElementsByClassName("img_watermark");
+    console.log(images);
+    let height = 0;
+    for (let i = 0; i < images.length; i++) {
+      height += images[i].offsetHeight;
+      // console.log(height);
+    }
+    console.log(height);
+    let width = images[0].offsetHeight;
+    let waterMarkOut = document.getElementById("waterMarkOut");
+    waterMarkOut.style.width = width;
+    waterMarkOut.style.height = height;
+    screenWidth.value = document.body.clientWidth;
+
+    if (message.works_mark == 1) {
+      setWaterMark("qiujunwei", "王嘉尔");
+    }
+  }, 500);
+
+  //监听页面大小发生变化
+  window.onresize = () => {
+    return (() => {
+      screenWidth.value = document.body.clientWidth;
+    })();
+  };
+
+  await axios
+    .get(`/api/getCommentSet?works_id=${route.params.works_id}`)
+    .then((res) => {
+      // console.log(res);
+      // for (let key in res.data[0]) {
+      //   message[key] = res.data[0][key]; // foo, bar
+      //   console.log(res.data[0][key]);
+      // }
+      // console.log(message);
+      state.commentTree = formatTree(res.data);
+      console.log(state.commentTree);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+watch(
+  () => screenWidth.value,
+  async (screenWidth, newscreenWidth) => {
+    // console.log(screenWidth + " " + newscreenWidth);
+    await render();
+  }
+);
+
+const render = () => {
+  const images = document.getElementsByClassName("img_watermark");
+  console.log(images);
+  let height = 0;
+  for (let i = 0; i < images.length; i++) {
+    height += images[i].offsetHeight;
+    // console.log(height);
+  }
+  console.log(height);
+  let width = images[0].offsetWeight;
+  let waterMarkOut = document.getElementById("waterMarkOut");
+  waterMarkOut.style.width = width;
+  waterMarkOut.style.height = height;
+
+  if (message.works_mark == 1) {
+    setWaterMark("qiujunwei", "王嘉尔");
+  }
+};
+
+const addComment = async () => {
+  //往评论表中添加评论
+  await axios
+    .post("/api/addComment", {
+      comment_user_id: store.state.user_id,
+      comment_text: state.commentText,
+      comment_work_id: route.params.works_id,
+      comment_pid: 0,
+      comment_date: getTime(),
+      comment_like_num: 0,
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  //将自己刚刚评论的放在最前面
+  //这里返回值可以拿到comment_id,这样可以将这条信息放在最前面
+
+  state.commentText = "";
+  //添加完后如何渲染？
+  //重新请求一遍？
+  await axios
+    .get(`/api/getCommentSet?works_id=${route.params.works_id}`)
+    .then((res) => {
+      state.commentTree = formatTree(res.data);
+      // state.commentTree = formatTree(state.commentTree);
+      console.log(state.commentTree);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+const addReply = async (item, replyText) => {
+  await axios
+    .post("/api/addComment", {
+      comment_user_id: store.state.user_id,
+      comment_text: replyText,
+      comment_work_id: route.params.works_id,
+      comment_pid: item.comment_id,
+      comment_date: getTime(),
+      comment_like_num: 0,
+    })
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  await axios
+    .get(`/api/getCommentSet?works_id=${route.params.works_id}`)
+    .then((res) => {
+      state.commentTree = formatTree(res.data);
+      console.log(state.commentTree);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+function formatTree(data) {
+  const result = [];
+  const map = [];
+
+  data.forEach((item) => {
+    map[item.comment_id] = item;
+  });
+
+  data.forEach((item) => {
+    const parent = map[item.comment_pid];
+    if (parent) {
+      (parent.children || (parent.children = [])).unshift(item);
+    } else {
+      result.unshift(item);
+    }
+  });
+
+  return result;
+}
+
+function getTime() {
+  let date = new Date();
+  let dateDetail = {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+  };
+  let time = {
+    Hours: date.getHours(),
+    minutes: date.getMinutes(),
+    seconeds: date.getSeconds(),
+  };
+  if (dateDetail.month < 10) dateDetail.month = "0" + dateDetail.month;
+  if (dateDetail.day < 10) dateDetail.day = "0" + dateDetail.day;
+  const createTime =
+    dateDetail.year +
+    "-" +
+    dateDetail.month +
+    "-" +
+    dateDetail.day +
+    " " +
+    time.Hours +
+    ":" +
+    time.minutes +
+    ":" +
+    time.seconeds;
+  console.log(createTime);
+  return createTime;
+}
 </script>
 
 <style lang="scss" scoped>
@@ -108,10 +365,13 @@ const array = [
   margin: 0;
   font-family: "Montserrat", sans-serif;
 }
+
 .content_box {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  width: 100%;
+  // height: 100vh;
   // align-items: center;
 
   .img_box {
