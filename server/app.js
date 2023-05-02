@@ -13,6 +13,7 @@ const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
 const zip = require('express-zip');
+const os = require('os');
 app.use(express.static('upload'));
 app.use(express.static(__dirname));
 // http://localhost:8081/1/1.jpg
@@ -32,6 +33,181 @@ app.all("*", function (req, res, next) {
     else
         next();
 });
+
+app.get('/getCollectSet', (req, res) => {
+    let params = {
+        user_id: req.query.user_id
+    }
+    userDao.getCollectSet(params, r => {
+        if (r.code != 200) {
+            res.send('获取图片失败');
+            res.end();
+        } else {
+            let data = r.data.map(item => item);
+            for (let i = 0; i < data.length; i++) {
+                let id = data[i].works_pic_id;
+                // console.log(id);
+                const dirs = fs.readdirSync(`./upload/${id}`);
+                for (let j = 0; j < dirs.length; j++) {
+                    data[i].picName = dirs[0];
+                    break;
+                }
+            }
+            // console.log(data);
+            res.send(data);
+            res.end();
+        }
+    })
+})
+
+app.post('/findCollect', (req, res) => {
+    let params = {
+        user_id: req.query.user_id,
+        works_id: req.query.works_id
+    }
+    userDao.findCollect(params, r => {
+        if (r.code !== 200) {
+            res.send('addHead失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                // console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
+app.post('/deleteCollect', (req, res) => {
+    let params = {
+        user_id: req.query.user_id,
+        works_id: req.query.works_id
+    }
+    userDao.deleteCollect(params, r => {
+        if (r.code !== 200) {
+            res.send('addHead失败');
+            res.end();
+        } else {
+            // console.log(r);
+            if (r.data) {
+                // console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
+app.post('/addCollect', (req, res) => {
+    let params = {
+        user_id: req.query.user_id,
+        works_id: req.query.works_id
+    }
+    userDao.addCollect(params, r => {
+        if (r.code !== 200) {
+            res.send('addHead失败');
+            res.end();
+        } else {
+            // console.log(r);
+            if (r.data) {
+                // console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
+app.post('/addWorks', (req, res) => {
+    let Params = req.body;
+    // console.log(urlParam);
+    userDao.addWorks(Params, r => {
+        if (r.code !== 200) {
+            res.send('添加失败');
+            res.end();
+        } else {
+            console.log(r);
+            if (r.data) {
+                // res.send('Number of records added: ' + r.data.affectedRows);
+                res.send({
+                    'insertId': r.data.insertId,
+                    'Number of records added': r.data.affectedRows
+                });
+                res.end();
+            } else {
+                res.send("addWorks");
+                res.end();
+            }
+        }
+    })
+})
+
+app.post('/deleteWork', (req, res) => {
+    let params = {
+        works_id: req.query.works_id
+    }
+    userDao.deleteWork(params, r => {
+        if (r.code !== 200) {
+            res.send('deleteWork失败');
+            res.end();
+        } else {
+            // console.log(r);
+            if (r.data) {
+                // console.log(r.data);
+                res.send(r.data);
+                res.end();
+            } else {
+                res.send("failed");
+                res.end();
+            }
+        }
+    })
+})
+
+app.get('/getMyWorks', (req, res) => {
+    let params = {
+        user_id: req.query.user_id
+    }
+    // console.log(params);
+
+    userDao.getMyWorks(params, r => {
+        if (r.code != 200) {
+            res.send('获取图片失败');
+            res.end();
+        } else {
+            let data = r.data.map(item => item);
+            for (let i = 0; i < data.length; i++) {
+                let id = data[i].works_pic_id;
+                // console.log(id);
+                const dirs = fs.readdirSync(`./upload/${id}`);
+                for (let j = 0; j < dirs.length; j++) {
+                    data[i].picName = dirs[0];
+                    break;
+                }
+            }
+            // console.log(data);
+            res.send(data);
+            res.end();
+        }
+    })
+
+})
+
+app.get('/getIp', (req, res) => {
+    let IP = os.networkInterfaces();
+    res.send(IP);
+})
 
 app.post('/addComment', (req, res) => {
     let Params = req.body;
@@ -345,7 +521,8 @@ app.post('/addHeadPic', multer({
         fs.mkdirSync(`./headPic/${req.query.user_id}`);
         // 更改存储路径
         // req.file.originalname -> 源文件名+"."+后缀名
-        const newfileName = req.query.work_id + "." + req.file.originalname.split('.')[1];
+        // const newfileName = req.query.work_id + "." + req.file.originalname.split('.')[1];
+        const newfileName = req.file.originalname;
         fs.renameSync(req.file.path, `headPic/${req.query.user_id}/${newfileName}`);
         res.send(req.file);
     }

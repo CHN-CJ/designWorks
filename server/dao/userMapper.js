@@ -1,4 +1,12 @@
 module.exports = {
+    //收藏功能
+    getCollectSet: "SELECT * FROM designworks.t_collectset WHERE user_id = ?",
+    findCollect: "SELECT * FROM designworks.t_collect WHERE user_id = ? && works_id = ?",
+    deleteCollect: "DELETE FROM designworks.t_collect WHERE user_id = ? && works_id = ?",
+    addCollect: "INSERT INTO designworks.t_collect (user_id, works_id) VALUES (?, ?)",
+    addWorks: "INSERT INTO designworks.t_works (user_id, works_name, works_date, works_views, works_type, works_mark,works_write, works_owner, works_pic_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    deleteWork: "DELETE FROM designworks.t_works WHERE works_id = ?",
+    getMyWorks: "SELECT * FROM designworks.t_allpic WHERE user_id = ?",
     addComment: "INSERT INTO designworks.t_comment (comment_user_id, comment_text, comment_work_id, comment_pid, comment_date, comment_like_num) VALUES (?, ?, ?, ?, ?, ?)",
     getCommentSet: "SELECT * FROM designworks.t_commentset WHERE comment_work_id = ?",
     getWork: "SELECT * FROM designworks.t_filemessage WHERE works_id = ?",

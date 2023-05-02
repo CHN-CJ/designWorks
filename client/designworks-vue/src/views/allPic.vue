@@ -8,6 +8,16 @@
       <div class="type" @click="changepicArray('font')">字体设计</div>
       <div class="type" @click="changepicArray('ui')">UI设计</div>
       <div class="type" @click="changepicArray('other')">其他</div>
+      <div class="search">
+        <el-input
+          v-model="SearchValue"
+          class="w-50 m-2"
+          placeholder="搜索"
+          :prefix-icon="Search"
+          @keyup.enter.native="getSearch"
+        />
+        <div class="searchButton" @click="getSearch">搜索</div>
+      </div>
     </div>
     <div id="pic_block">
       <!-- <a target="_blank" href="http://localhost:8080/showFile"> -->
@@ -52,11 +62,14 @@
 import axios from "axios";
 import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { Search } from "@element-plus/icons-vue";
+
 const router = useRouter();
 
 const picArray = ref([]);
 const Array = ref([1, 2, 3]);
 let typeArray = ref([]);
+const SearchValue = ref("");
 
 onMounted(async () => {
   await axios
@@ -83,6 +96,20 @@ onMounted(async () => {
     };
   });
 });
+
+const getSearch = () => {
+  picArray.value = typeArray;
+
+  picArray.value = picArray.value.filter(
+    (item) =>
+      item.user_name.indexOf(SearchValue.value) != -1 ||
+      item.works_name.indexOf(SearchValue.value) != -1 ||
+      SearchValue.value.indexOf(item.user_name) != -1
+  );
+
+  SearchValue.value = "";
+  onLoad();
+};
 
 const onLoad = () => {
   //将 columnWidth column 作为响应式的，去匹配小尺寸
@@ -140,18 +167,10 @@ const changepicArray = async (type) => {
         console.log(err);
       });
     typeArray = picArray.value;
-
-    // const container = document.querySelector("#pic_block");
-    // const images = container.querySelectorAll("img");
-    // images.forEach((image) => {
-    //   image.onload = () => {
-    //     onLoad();
-    //   };
-    // });
-    onLoad();
   } else {
     picArray.value = typeArray;
     picArray.value = picArray.value.filter((item) => item.works_type === type);
+    onLoad();
   }
 };
 </script>
@@ -166,6 +185,7 @@ const changepicArray = async (type) => {
   width: 100%;
   flex-direction: column;
   box-sizing: border-box;
+  align-items: center;
 
   .pic_type {
     width: 100%;
@@ -189,6 +209,32 @@ const changepicArray = async (type) => {
       &.action {
         background: #1c1f23;
         color: #f7f9fa;
+      }
+    }
+
+    .search {
+      min-width: 200px;
+      max-width: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      // ::v-deep .el-input__inner {
+      //   width: 110px;
+      // }
+      .el-menu--horizontal {
+        align-items: center;
+      }
+
+      .searchButton {
+        display: block;
+        color: #fff;
+        background: #1e80ff;
+        border: 0px solid;
+        margin: 2px;
+        min-width: 50px;
+        padding: 6px;
+        text-align: center;
+        margin-left: 10px;
       }
     }
   }
@@ -223,7 +269,7 @@ const changepicArray = async (type) => {
         // border: 1px solid #ccc;
         box-shadow: 0 0 5px #ccc;
         border-radius: 12px;
-        max-height: 740px;
+        max-height: 640px;
         overflow: hidden;
 
         .home_pic {
@@ -255,6 +301,7 @@ const changepicArray = async (type) => {
       .head_pic {
         width: 20px;
         height: 20px;
+        border-radius: 50%;
       }
     }
   }

@@ -12,7 +12,7 @@
       <el-menu-item index="1" @click="toAllPic()">发现</el-menu-item>
       <el-menu-item index="2" @click="toUpload()">上传</el-menu-item>
       <el-menu-item index="4" @click="toShowMessage()">我的</el-menu-item>
-      <el-sub-menu index="3">
+      <!-- <el-sub-menu index="3">
         <template #title>Workspace</template>
         <el-menu-item index="3-1">item one</el-menu-item>
         <el-menu-item index="3-2">item two</el-menu-item>
@@ -23,7 +23,7 @@
           <el-menu-item index="3-4-2">item two</el-menu-item>
           <el-menu-item index="3-4-3">item three</el-menu-item>
         </el-sub-menu>
-      </el-sub-menu>
+      </el-sub-menu> -->
     </el-menu>
     <router-view></router-view>
     <div class="login_register" v-if="loginFlag">
@@ -37,6 +37,23 @@
     <div class="login_register" v-else>
       <img :src="HeadUrl" alt="" />
       {{ store.state.user_name }}
+      <svg
+        t="1682844010499"
+        class="icon"
+        viewBox="0 0 1024 1024"
+        version="1.1"
+        xmlns="http://www.w3.org/2000/svg"
+        p-id="2636"
+        width="28"
+        height="28"
+        @click="LogOut"
+      >
+        <path
+          d="M662.016 247.6544a32 32 0 1 1 29.4912-56.832 390.4 390.4 0 1 1-359.0144 0 32 32 0 1 1 29.4912 56.832 326.4 326.4 0 1 0 300.032 0zM544 384a32 32 0 1 1-64 0v-256a32 32 0 1 1 64 0v256z"
+          fill="#5A5A68"
+          p-id="2637"
+        ></path>
+      </svg>
     </div>
   </div>
 </template>
@@ -93,7 +110,7 @@ watch(
         .get(`/api/getHead?user_id=${store.state.user_id}`)
         .then((res) => {
           console.log(res);
-          HeadUrl.value = `http://localhost:8081${res.data[0].head_pic}`;
+          HeadUrl.value = `http://${store.state.netWork}:8081${res.data[0].head_pic}`;
         })
         .catch((err) => {
           console.log(err);
@@ -117,6 +134,12 @@ const toShowMessage = () => {
 
 const toLoginRegister = () => {
   router.push("./login_register");
+};
+
+const LogOut = () => {
+  store.commit("initUser", { user_id: "", user_name: "" });
+  console.log(store.state);
+  loginFlag.value = true;
 };
 </script>
 
@@ -146,6 +169,7 @@ const toLoginRegister = () => {
     padding: 10px 10px;
     background: transparent;
     cursor: pointer;
+    color: #1e80ff;
   }
   .register {
     width: 40px;
@@ -154,12 +178,13 @@ const toLoginRegister = () => {
     background: transparent;
     border: 1px solid #0d1117;
     border-radius: 6px;
+    color: #1e80ff;
   }
 }
 
 img {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   overflow-clip-margin: content-box;
   overflow: clip;
   overflow: hidden;

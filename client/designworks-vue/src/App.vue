@@ -18,6 +18,7 @@
  */
 import { onMounted, ref } from "vue";
 import axios from "axios";
+import store from "./vuex/store.js";
 
 import openingAnimation from "./views/opening-animation.vue";
 import signInUp from "./views/sign-in-up.vue";
@@ -28,6 +29,37 @@ import loginRegister from "./views/login-register.vue";
 import homePage from "./views/home-page.vue";
 import allPic from "./views/allPic.vue";
 import showMessage from "./views/show-message.vue";
+
+const netWork = ref("");
+
+onMounted(async () => {
+  // await window.addEventListener("beforeunload", beforeunloadFn);
+  await axios
+    .get(`/api/getIp`)
+    .then(async (res) => {
+      console.log(res);
+      for (let i = 0; i < res.data.WLAN.length; i++) {
+        if (res.data.WLAN[i].netmask === "255.255.255.0") {
+          netWork.value = res.data.WLAN[i].address;
+        }
+      }
+      console.log("netWork:" + res.data);
+      store.commit("initnetWork", netWork.value);
+      console.log("store.state.netWork", store.state.netWork);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
+
+const beforeunloadFn = () => {
+  if (JSON.parse(localStorage.getItem("user"))[0]) {
+    let user = JSON.parse(localStorage.getItem("user"))[0];
+    store.commit("initUser", user);
+    console.log(store.state);
+    console.log("aaa");
+  }
+};
 
 const flag = ref(true);
 

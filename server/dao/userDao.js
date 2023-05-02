@@ -1,7 +1,137 @@
 let { pool } = require("../conf/db.config");
-let { addUser, findUsers, getWorkComment, addWorkId, addPicId, getPicId, addHead, getUserId, getAllPic, changeHead, getHead, getWork, getCommentSet, addComment } = require('./userMapper');
+let { addUser, findUsers, getWorkComment, addWorkId, addPicId, getPicId, addHead, getUserId,
+    getAllPic, changeHead, getHead, getWork, getCommentSet, addComment, getMyWorks, deleteWork,
+    addWorks, addCollect, deleteCollect, findCollect, getCollectSet } = require('./userMapper');
 
 module.exports = {
+    getCollectSet: function (params, callback) {
+        let sqlparam = [params.user_id];
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(getCollectSet, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("getCollectSet err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    findCollect: function (params, callback) {
+        let sqlparam = [
+            params.user_id,
+            params.works_id,
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(findCollect, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("findCollect err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    deleteCollect: function (params, callback) {
+        let sqlparam = [
+            params.user_id,
+            params.works_id,
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(deleteCollect, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("deleteCollect err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    addCollect: function (params, callback) {
+        let sqlparam = [
+            params.user_id,
+            params.works_id,
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(addCollect, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("addWorks err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    addWorks: function (params, callback) {
+        let sqlparam = [
+            params.user_id,
+            params.works_name,
+            params.works_date,
+            params.works_views,
+            params.works_type,
+            params.works_mark,
+            params.works_write,
+            params.works_owner,
+            params.works_pic_id
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(addWorks, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("addWorks err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    deleteWork: function (params, callback) {
+        let sqlparam = [
+            params.works_id
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(deleteWork, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("getMyWorks err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    getMyWorks: function (params, callback) {
+        let sqlparam = [
+            params.user_id
+        ]
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(getMyWorks, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("getMyWorks err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
     addComment: function (params, callback) {
         let sqlparam = [
             params.comment_user_id,

@@ -98,9 +98,6 @@ const form = reactive({
   owner: "",
 });
 
-const onSubmit = () => {
-  console.log("submit!");
-};
 onMounted(async () => {
   user_id = store.state.user_id;
   work_pic_date = getTime();
@@ -122,6 +119,32 @@ async function addPicId(user_id, work_pic_date) {
     });
   return;
 }
+
+const onSubmit = async () => {
+  console.log("submit!");
+  // 判断是否上传了文件
+  // 如果没有，那么不能上传
+
+  await axios
+    .post("/api/addWorks", {
+      user_id: store.state.user_id,
+      works_name: form.name,
+      works_date: getTime(),
+      works_views: 0,
+      works_type: form.region,
+      works_mark: form.delivery == true ? 1 : 0,
+      works_write: form.desc,
+      works_owner: form.owner,
+      works_pic_id: pic_id.value,
+    })
+    .then((res) => {
+      console.log(res.data);
+      alert("上传成功");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 
 // 获取到 pic_name 表的 pic_id
 async function getPicId(user_id, work_pic_date) {

@@ -22,8 +22,16 @@
       ></div>
       <div class="user_box" v-if="message.works_name != ''">
         <h3>{{ message.works_name }}</h3>
-        <div v-if="true" class="user_desc"></div>
-        <div class="user_detail">用户信息</div>
+        <div v-if="true" class="user_desc">
+          {{
+            message.works_write != null
+              ? message.works_write
+              : "这个作者很懒，啥都没写"
+          }}
+        </div>
+        <div class="user_detail">
+          {{ message.user_name }}
+        </div>
         <div class="btn_function">
           <button>
             <!-- <svg
@@ -61,24 +69,30 @@
               ></path>
             </svg>
           </button>
-          <button>
+          <div id="collect">
             <svg
-              t="1681214241285"
-              class="icon"
-              viewBox="0 0 1024 1024"
+              t="1682913810082"
+              class="icon collect"
+              viewBox="0 0 1126 1024"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
-              p-id="5539"
-              width="15"
-              height="15"
+              p-id="3359"
+              width="40"
+              height="40"
+              @click="collect"
             >
               <path
-                d="M720.398507 959.573333c73.045333 31.317333 136.96-15.317333 129.706666-94.293333l-20.650666-226.218667 174.634666-199.722666c38.144-43.648 19.2-102.229333-37.418666-115.114667l-258.474667-58.794667-135.68-228.010666c-29.738667-49.877333-91.306667-49.92-121.045333 0L315.74784 265.429333 57.273173 324.224C0.953173 337.066667-18.33216 395.648 19.854507 439.338667l174.634666 199.722666-24.021333 264.405334c-5.248 57.770667 44.544 94.037333 97.877333 71.125333l243.626667-104.533333 208.426667 89.472z"
-                fill="#e6e6e6"
-                p-id="5540"
+                d="M742.4 0h-358.4C199.68 0 51.2 148.48 51.2 332.8v358.4C51.2 875.52 199.68 1024 384 1024h358.4C926.72 1024 1075.2 875.52 1075.2 691.2v-358.4C1075.2 148.48 926.72 0 742.4 0zM904.533333 471.04c-3.413333 22.186667-13.653333 42.666667-29.013333 59.733333l-81.92 81.92 18.773333 114.346667c10.24 56.32-27.306667 109.226667-83.626666 119.466667-22.186667 3.413333-44.373333 0-64.853334-10.24l-102.4-54.613334L460.8 836.266667c-49.493333 27.306667-110.933333 6.826667-136.533333-42.666667-10.24-20.48-13.653333-42.666667-10.24-64.853333l18.773333-114.346667-81.92-81.92c-40.96-39.253333-40.96-105.813333-1.706667-146.773333 15.36-15.36 35.84-27.306667 58.026667-30.72l114.346667-17.066667 51.2-104.106667c25.6-51.2 85.333333-71.68 136.533333-46.08 20.48 10.24 35.84 27.306667 46.08 46.08l51.2 104.106667 114.346667 17.066667c52.906667 8.533333 92.16 59.733333 83.626666 116.053333z"
+                fill="#707070"
+                p-id="3360"
+              ></path>
+              <path
+                d="M810.666667 406.186667l-119.466667-17.066667c-13.653333-1.706667-25.6-10.24-30.72-22.186667L607.573333 256c-5.12-10.24-13.653333-18.773333-22.186666-23.893333-23.893333-11.946667-54.613333-1.706667-66.56 23.893333l-52.906667 109.226667c-5.12 11.946667-17.066667 20.48-30.72 22.186666l-119.466667 17.066667c-10.24 1.706667-20.48 6.826667-29.013333 15.36-20.48 20.48-18.773333 52.906667 1.706667 73.386667l85.333333 85.333333c10.24 10.24 13.653333 22.186667 11.946667 35.84l-20.48 119.466667c-1.706667 11.946667 0 22.186667 5.12 32.426666 13.653333 25.6 42.666667 34.133333 68.266666 22.186667l105.813334-56.32c11.946667-6.826667 27.306667-6.826667 39.253333 0l105.813333 56.32c10.24 5.12 20.48 6.826667 30.72 5.12 27.306667-5.12 46.08-30.72 40.96-59.733333l-20.48-119.466667c-1.706667-13.653333 1.706667-27.306667 11.946667-35.84l85.333333-85.333333c8.533333-8.533333 13.653333-18.773333 15.36-29.013334 5.12-27.306667-13.653333-54.613333-42.666666-58.026666z"
+                fill="#707070"
+                p-id="3361"
               ></path>
             </svg>
-          </button>
+          </div>
           <button>
             <svg
               t="1681214202535"
@@ -114,17 +128,25 @@
         <comment :data="state.commentTree" @add-reply="addReply"></comment>
       </ul>
     </div>
+    <!-- vue-qrcode 警告来源 -->
+    <!-- <vue-qrcode :value="fileLink" /> -->
+    <canvas id="qrcode" width="200" height="200"></canvas>
   </div>
 </template>
 
 
 <script setup>
+// 二维码的链接形式不能是localhost
+// 扫二维码时，图片、头像的url也同样不能是localhost，不然显示不出来
+
 import axios from "axios";
 import { onMounted, reactive, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import store from "../vuex/store.js";
 import { removeWatermark, setWaterMark } from "../common/watermark";
 import comment from "./comment.vue";
+import VueQrcode from "vue-qrcode";
+import UQRCode from "uqrcodejs";
 
 const router = useRouter();
 const route = useRoute();
@@ -141,7 +163,7 @@ const message = reactive({
   works_pic_id: 0,
   works_type: "",
   works_view: 0,
-  works_writer: "",
+  works_write: "",
 });
 const state = reactive({
   commentText: "",
@@ -151,8 +173,21 @@ const imageUrl = ref([]);
 
 const screenWidth = ref(0);
 
+// const fileLink = ref(
+//   `http://192.168.43.194:8080/showFile/${route.params.works_id}`
+// );
+
+const fileLink = ref(
+  `http://${store.state.netWork}:8080/showFile/${route.params.works_id}`
+);
+
+// const fileLink = ref(
+//   "http://192.168.3.7:8081/upload/222/222_1_a6110ac401a1cded0ff5641b412bc3587376c9ae1cd5e1-iojVl3_fw658webp.webp"
+// );
+
 onMounted(async () => {
   console.log(route.params.works_id);
+  console.log(store.state.netWork);
   await axios
     .get(`/api/getWork?works_id=${route.params.works_id}`)
     .then((res) => {
@@ -168,9 +203,27 @@ onMounted(async () => {
     });
 
   for (let i = 0; i < message.dirPic.length; i++) {
-    imageUrl.value.push("http://localhost:8081" + message.dirPic[i]);
+    imageUrl.value.push(
+      `http://${store.state.netWork}:8081` + message.dirPic[i]
+    );
   }
   console.log(imageUrl.value);
+
+  var qr = new UQRCode();
+  // 设置二维码内容
+  qr.data = `http://${store.state.netWork}:8080/showFile/${route.params.works_id}`;
+  // 设置二维码大小，必须与canvas设置的宽高一致
+  qr.size = 200;
+  // 调用制作二维码方法
+  qr.make();
+  // 获取canvas元素
+  var canvas = document.getElementById("qrcode");
+  // 获取canvas上下文
+  var canvasContext = canvas.getContext("2d");
+  // 设置uQRCode实例的canvas上下文
+  qr.canvasContext = canvasContext;
+  // 调用绘制方法将二维码图案绘制到canvas上
+  qr.drawCanvas();
 
   setTimeout(() => {
     const images = document.getElementsByClassName("img_watermark");
@@ -190,7 +243,7 @@ onMounted(async () => {
     if (message.works_mark == 1) {
       setWaterMark("qiujunwei", "王嘉尔");
     }
-  }, 500);
+  }, 200);
 
   //监听页面大小发生变化
   window.onresize = () => {
@@ -198,6 +251,24 @@ onMounted(async () => {
       screenWidth.value = document.body.clientWidth;
     })();
   };
+
+  //判断是否在收藏表里，如果在的话，添加classs
+  await axios
+    .post(
+      `/api/findCollect?user_id=${store.state.user_id}&works_id=${route.params.works_id}`
+    )
+    .then((res) => {
+      console.log(res.data);
+      // 如果有，res.data返回 [{collect_id: ....}]
+      // 如果没有，返回 []
+      if (res.data.length != 0) {
+        let collectSvg = document.querySelector(".collect");
+        collectSvg.classList.add("active");
+      }
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 
   await axios
     .get(`/api/getCommentSet?works_id=${route.params.works_id}`)
@@ -223,6 +294,46 @@ watch(
     await render();
   }
 );
+
+// const onDataUrlChange = () => {};
+
+const collect = async () => {
+  let collectSvg = document.querySelector(".collect");
+  if (collectSvg.classList.contains("active")) {
+    collectSvg.classList.remove("active");
+    // 取消收藏
+    await axios
+      .post(
+        `/api/deleteCollect?user_id=${store.state.user_id}&works_id=${route.params.works_id}`
+      )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } else {
+    // 添加收藏
+    collectSvg.classList.add("active");
+
+    await axios
+      .post(
+        `/api/addCollect?user_id=${store.state.user_id}&works_id=${route.params.works_id}`
+      )
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  // const collectList = document.getElementById("collect").className;
+  // if(collectList.animVal.indexOf("collect") != -1) {
+  //   //有 collect 移除class
+  //   //收藏表 删除
+  // } else {
+  // }
+};
 
 const render = () => {
   const images = document.getElementsByClassName("img_watermark");
@@ -386,6 +497,7 @@ function getTime() {
       max-height: 100%;
       border-radius: 12px;
       margin-bottom: 10px;
+
       // position: relative;
       // width: 100%;
       &:last-child {
@@ -416,6 +528,10 @@ function getTime() {
     .btn_function {
       display: flex;
       margin: 5px;
+
+      svg.active path {
+        fill: #f4ea2a;
+      }
 
       button {
         width: 40px;

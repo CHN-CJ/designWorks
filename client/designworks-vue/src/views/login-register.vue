@@ -2,7 +2,7 @@
   <!-- <div class="login_register"> -->
   <div class="form-structor">
     <div class="signup">
-      <h2 class="form-title" id="signup"><span>or</span>Sign up</h2>
+      <h2 class="form-title" id="signup"><span>or</span>注 册</h2>
       <div class="form-holder">
         <input
           type="text"
@@ -23,11 +23,11 @@
           v-model="register.user_password"
         />
       </div>
-      <button class="submit-btn" @click="registerUser()">Sign up</button>
+      <button class="submit-btn" @click="registerUser()">注 册</button>
     </div>
     <div class="login slide-up">
       <div class="center">
-        <h2 class="form-title" id="login"><span>or</span>Log in</h2>
+        <h2 class="form-title" id="login"><span>or</span>登 录</h2>
         <div class="form-holder">
           <input
             type="text"
@@ -42,7 +42,7 @@
             v-model="login.user_password"
           />
         </div>
-        <button class="submit-btn" @click="loginUser()">Log in</button>
+        <button class="submit-btn" @click="loginUser()">登 录</button>
       </div>
     </div>
   </div>
@@ -102,7 +102,9 @@ const register = reactive({
 });
 
 const registerUser = async () => {
-  if (
+  if (!isValidEmailAddress(register.user_email)) {
+    alert("邮箱格式错误");
+  } else if (
     register.user_name == "" ||
     register.user_email == "" ||
     register.user_password == ""
@@ -134,6 +136,8 @@ const registerUser = async () => {
     .catch((err) => {
       console.log(err);
     });
+
+  alter("注册成功");
 };
 
 const login = reactive({
@@ -159,8 +163,17 @@ const loginUser = async () => {
     });
 
   await store.commit("initUser", user);
+  console.log("user_id" + store.state.user_id);
+  console.log("user_name" + store.state.user_name);
 
   router.push("./");
+};
+
+const isValidEmailAddress = (emailAddress) => {
+  // 邮箱地址的正则表达式
+  var emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  // 使用 test 方法检查输入的字符串是否符合邮箱格式
+  return emailPattern.test(emailAddress);
 };
 </script>
  
