@@ -1,5 +1,6 @@
 let setWatermark = (strOne, strTwo) => {
     let id = '1.23452384164.123412415'
+    console.log(strOne, strTwo);
 
     let waterMarkOut = document.getElementById("waterMarkOut");
     waterMarkOut.style.position = 'relative'
@@ -22,8 +23,8 @@ let setWatermark = (strOne, strTwo) => {
         cans.fillStyle = '#666666';
         cans.textAlign = 'center';
         cans.textBase = 'Middle';
-        cans.fillText(strOne, canvas.width / 2, canvas.height);
-        cans.fillText(strTwo, canvas.height / 2, canvas.height + 22);
+        cans.fillText(strOne, canvas.width / 2 - 20, canvas.height - 30);
+        cans.fillText(strTwo, canvas.width / 2 - 20, canvas.height - 10);
 
         let div = document.createElement('div');
         div.id = id;
@@ -43,7 +44,7 @@ let setWatermark = (strOne, strTwo) => {
 }
 
 // 添加水印方法
-export const setWaterMark = (strOne, strTwo) => {
+export const setWaterMark = (strOne = "", strTwo = "") => {
     let id = setWatermark(strOne, strTwo)
     if (document.getElementById(id) === null) {
         id = setWatermark(strOne, strTwo)

@@ -21,6 +21,21 @@
         <el-form-item label="添加水印">
           <el-switch v-model="form.delivery"></el-switch>
         </el-form-item>
+        <el-form :inline="true" :model="waterMark" class="demo-form-inline">
+          <el-form-item label="水印一">
+            <el-input
+              v-model="waterMark.name_one"
+              placeholder="必填"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="水印二">
+            <el-input
+              v-model="waterMark.name_two"
+              placeholder="选填"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+
         <el-tooltip
           class="box-item"
           effect="dark"
@@ -98,6 +113,13 @@ const form = reactive({
   owner: "",
 });
 
+const waterMark = reactive({
+  name_one: "",
+  name_two: "",
+});
+
+const works_id = ref(0);
+
 onMounted(async () => {
   user_id = store.state.user_id;
   work_pic_date = getTime();
@@ -139,7 +161,21 @@ const onSubmit = async () => {
     })
     .then((res) => {
       console.log(res.data);
+      works_id.value = res.data.insertId;
       alert("上传成功");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  await axios
+    .post("/api/addwaterMark", {
+      waterMark_name_one: waterMark.name_one,
+      waterMark_name_two: waterMark.name_two,
+      waterMark_works_id: works_id.value,
+    })
+    .then((res) => {
+      console.log(res.data);
     })
     .catch((err) => {
       console.log(err);
@@ -214,6 +250,16 @@ function getTime() {
   padding: 0;
   margin: 0;
 }
+
+.demo-form-inline {
+  // /deep/el-input {
+  //   width: 110px;
+  // }
+  width: 100%;
+  .el-input {
+    min-width: 120px;
+  }
+}
 .upload {
   width: 100vw;
   height: 100vh;
@@ -224,11 +270,12 @@ function getTime() {
   align-items: center;
   flex-direction: column;
   flex-wrap: nowrap;
+  margin-top: 10px;
   .upload_form {
     width: 42%;
     min-width: 350px;
     border: 0;
-    padding: 30px;
+    padding: 20px;
     line-height: 1.5715;
     background-color: #fff;
     border-radius: 18px;
@@ -237,7 +284,7 @@ function getTime() {
   .upload_file {
     width: 42%;
     min-width: 350px;
-    padding: 30px;
+    padding: 20px;
     // height: 24vh;
     margin-bottom: 15px;
     border: 0;

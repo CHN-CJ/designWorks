@@ -31,15 +31,23 @@ import allPic from "./views/allPic.vue";
 import showMessage from "./views/show-message.vue";
 
 const netWork = ref("");
+const href = ref("");
 
 onMounted(async () => {
   // await window.addEventListener("beforeunload", beforeunloadFn);
+  // href.value = window.location.href;
+  // href.value = href.value.replace(/:\d+/, "");
+  // store.commit("initnetWork", href.value);
+  // console.log("store.state.netWork", store.state.netWork);
   await axios
     .get(`/api/getIp`)
     .then(async (res) => {
       console.log(res);
       for (let i = 0; i < res.data.WLAN.length; i++) {
-        if (res.data.WLAN[i].netmask === "255.255.255.0") {
+        // if (res.data.WLAN[i].netmask === "255.255.255.0") {
+        //   netWork.value = res.data.WLAN[i].address;
+        // }
+        if (res.data.WLAN[i].family === "IPv4") {
           netWork.value = res.data.WLAN[i].address;
         }
       }

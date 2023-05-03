@@ -1,13 +1,17 @@
 <template>
   <div class="pic">
     <div class="pic_type">
-      <div class="type action" @click="changepicArray('')">全部</div>
-      <div class="type" @click="changepicArray('advertisement')">广告设计</div>
-      <div class="type" @click="changepicArray('poster')">海报设计</div>
-      <div class="type" @click="changepicArray('illustration')">插画设计</div>
-      <div class="type" @click="changepicArray('font')">字体设计</div>
-      <div class="type" @click="changepicArray('ui')">UI设计</div>
-      <div class="type" @click="changepicArray('other')">其他</div>
+      <div class="type action" @click="changepicArray(e, '')">全部</div>
+      <div class="type" @click="changepicArray(e, 'advertisement')">
+        广告设计
+      </div>
+      <div class="type" @click="changepicArray(e, 'poster')">海报设计</div>
+      <div class="type" @click="changepicArray(e, 'illustration')">
+        插画设计
+      </div>
+      <div class="type" @click="changepicArray(e, 'font')">字体设计</div>
+      <div class="type" @click="changepicArray(e, 'ui')">UI设计</div>
+      <div class="type" @click="changepicArray(e, 'other')">其他</div>
       <div class="search">
         <el-input
           v-model="SearchValue"
@@ -45,7 +49,7 @@
           </div>
           <div>
             <!-- <div>{{ item.works_name }}</div> -->
-            <div>{{ item.works_type }}</div>
+            <div>{{ type[item.works_type] }}</div>
           </div>
         </div>
       </div>
@@ -60,9 +64,18 @@
  *
  */
 import axios from "axios";
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { Search } from "@element-plus/icons-vue";
+
+const type = reactive({
+  advertisement: "广告设计",
+  poster: "海报设计",
+  illustration: "插画设计",
+  font: "字体设计",
+  ui: "UI设计",
+  other: "其他",
+});
 
 const router = useRouter();
 
@@ -95,6 +108,8 @@ onMounted(async () => {
       onLoad();
     };
   });
+
+  onLoad();
 });
 
 const getSearch = () => {
@@ -153,7 +168,21 @@ const toShowFile = (works_id) => {
   router.push(`./showFile/${works_id}`);
 };
 
-const changepicArray = async (type) => {
+const changepicArray = async (e, type) => {
+  var pic_type = document.querySelector(".pic_type");
+  // console.log(pic_type);
+  pic_type.addEventListener("click", function () {
+    var lis = document.querySelectorAll(".type");
+    var event = window.event || arguments[0];
+    for (var i = 0; i < lis.length; i++) {
+      // lis[i].style.backgroundColor = 'white';
+      lis[i].classList.remove("action");
+    }
+    // event.target.style.backgroundColor = 'pink';
+    event.target.classList.add("action");
+    // console.log(event);
+  });
+
   if (type == "") {
     // 点击全部时，在重新进行一次请求
     await axios
@@ -167,6 +196,7 @@ const changepicArray = async (type) => {
         console.log(err);
       });
     typeArray = picArray.value;
+    onLoad();
   } else {
     picArray.value = typeArray;
     picArray.value = picArray.value.filter((item) => item.works_type === type);

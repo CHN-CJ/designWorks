@@ -20,55 +20,63 @@
         class="watermark"
         style="width: 400px; height: 500px; display: none"
       ></div>
+      <div class="QR active">
+        <div class="cancel">
+          <svg
+            t="1683031997676"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="14057"
+            width="28"
+            height="28"
+            @click="hideQR"
+          >
+            <path
+              d="M1004.032007 907.639505l-395.605202-395.605201 395.605202-395.673468c12.902396-12.902396 19.967993-30.037323 19.967993-48.298651 0-18.158927-7.099731-35.259722-19.93386-48.059717A67.583977 67.583977 0 0 0 955.938156 0.000341c-18.295461 0-35.430388 7.099731-48.298651 19.967994L512.000171 415.573536 116.360836 19.968335A67.720511 67.720511 0 0 0 68.164585 0.000341C49.971525 0.000341 32.87073 7.100072 19.968335 19.968335A67.549844 67.549844 0 0 0 0.000341 68.096319c0 18.227194 7.065598 35.362122 19.967994 48.264517l395.673468 395.673468L19.968335 907.605372A67.720511 67.720511 0 0 0 0.000341 955.835756c0 18.193061 7.099731 35.327988 19.967994 48.196251 12.902396 12.868262 30.00319 19.967993 48.19625 19.967993 18.193061 0 35.327988-7.099731 48.196251-19.967993l395.673468-395.605202 395.605201 395.605202c12.868262 12.868262 30.037323 19.967993 48.230384 19.967993 18.227194 0 35.293855-7.099731 48.127984-19.93386a68.266644 68.266644 0 0 0 0-96.426635z"
+              fill="#707070"
+              p-id="14058"
+            ></path>
+          </svg>
+        </div>
+        <div class="canvas">
+          <canvas id="qrcode" width="200" height="200"></canvas>
+        </div>
+      </div>
       <div class="user_box" v-if="message.works_name != ''">
         <h3>{{ message.works_name }}</h3>
         <div v-if="true" class="user_desc">
-          {{
-            message.works_write != null
-              ? message.works_write
-              : "这个作者很懒，啥都没写"
-          }}
-        </div>
-        <div class="user_detail">
-          {{ message.user_name }}
+          <div class="user_message">
+            <img :src="HeadUrl" alt="" class="headpid" />
+            {{ message.user_name }}
+          </div>
+          <p>
+            {{
+              message.works_write != null
+                ? message.works_write
+                : "这个作者很懒，啥都没写"
+            }}
+          </p>
         </div>
         <div class="btn_function">
-          <button>
-            <!-- <svg
-              t="1681291190064"
-              class="icon"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              p-id="2629"
-              width="20"
-              height="20"
-            >
-              <path
-                d="M797.184 518.496l-284.384 294.016-284.16-292A162.752 162.752 0 0 1 192 417.6C192 328.512 263.808 256 352 256a159.36 159.36 0 0 1 133.28 72.16L512 368.64l26.72-40.48A159.488 159.488 0 0 1 672 256c88.224 0 160 72.512 160 161.6 0 37.536-12.992 74.08-34.816 100.896M672 192a222.72 222.72 0 0 0-160 67.712A222.624 222.624 0 0 0 352 192c-123.52 0-224 101.216-224 225.6 0 52.288 18.176 103.232 52.96 145.536l285.952 293.984a62.4 62.4 0 0 0 45.088 19.168c17.12 0 33.12-6.816 45.12-19.136l287.744-296.064A226.816 226.816 0 0 0 896 417.6C896 293.216 795.52 192 672 192"
-                fill="#3E3A39"
-                p-id="2630"
-              ></path>
-            </svg> -->
-            <svg
-              t="1681273026730"
-              class="icon"
-              viewBox="0 0 1024 1024"
-              version="1.1"
-              xmlns="http://www.w3.org/2000/svg"
-              p-id="1469"
-              width="20"
-              height="20"
-            >
-              <path
-                class="path_color"
-                d="M672 192a222.72 222.72 0 0 0-160 67.68A222.592 222.592 0 0 0 352 192c-123.52 0-224 101.184-224 225.6 0 52.256 18.144 103.2 52.928 145.536l285.952 293.984a62.528 62.528 0 0 0 90.208 0l287.808-296.032A227.136 227.136 0 0 0 896 417.6C896 293.184 795.52 192 672 192"
-                fill-opacity=".2"
-                p-id="1470"
-                color="black"
-              ></path>
-            </svg>
-          </button>
+          <svg
+            t="1683031387332"
+            class="icon"
+            viewBox="0 0 1024 1024"
+            version="1.1"
+            xmlns="http://www.w3.org/2000/svg"
+            p-id="10812"
+            width="36"
+            height="36"
+            @click="showQR"
+          >
+            <path
+              d="M942.545455 744.727273a34.909091 34.909091 0 0 0-34.909091 34.909091V907.636364h-128a34.909091 34.909091 0 1 0 0 69.818181H930.909091a46.545455 46.545455 0 0 0 46.545454-46.545454v-151.272727a34.909091 34.909091 0 0 0-34.90909-34.909091M930.909091 46.545455h-151.272727a34.909091 34.909091 0 1 0 0 69.818181H907.636364v128a34.909091 34.909091 0 1 0 69.818181 0V93.090909a46.545455 46.545455 0 0 0-46.545454-46.545454m-418.909091 186.181818c-19.2 0-34.909091 16.221091-34.909091 36.026182v486.49309c0 19.805091 15.709091 36.026182 34.909091 36.026182s34.909091-16.221091 34.909091-36.026182V268.753455c0-19.805091-15.709091-36.026182-34.909091-36.026182m430.545455 244.363636h-256c-19.2 0-34.909091 15.709091-34.909091 34.909091s15.709091 34.909091 34.909091 34.909091h256c19.2 0 34.909091-15.709091 34.90909-34.909091s-15.709091-34.909091-34.90909-34.909091M81.454545 279.272727A34.909091 34.909091 0 0 0 116.363636 244.363636V116.363636h128a34.909091 34.909091 0 1 0 0-69.818181H93.090909a46.545455 46.545455 0 0 0-46.545454 46.545454v151.272727A34.909091 34.909091 0 0 0 81.454545 279.272727m256 197.818182h-256c-19.2 0-34.909091 15.709091-34.90909 34.909091s15.709091 34.909091 34.90909 34.909091h256c19.2 0 34.909091-15.709091 34.909091-34.909091s-15.709091-34.909091-34.909091-34.909091m-93.090909 430.545455H116.363636v-128a34.909091 34.909091 0 1 0-69.818181 0V930.909091a46.545455 46.545455 0 0 0 46.545454 46.545454h151.272727a34.909091 34.909091 0 1 0 0-69.818181"
+              fill="#515151"
+              p-id="10813"
+            ></path>
+          </svg>
           <div id="collect">
             <svg
               t="1682913810082"
@@ -93,25 +101,39 @@
               ></path>
             </svg>
           </div>
-          <button>
+
+          <a href="#comment">
             <svg
-              t="1681214202535"
+              t="1683030355769"
               class="icon"
               viewBox="0 0 1024 1024"
               version="1.1"
               xmlns="http://www.w3.org/2000/svg"
-              p-id="4572"
-              width="15"
-              height="15"
+              p-id="7744"
+              width="40"
+              height="40"
             >
               <path
-                d="M853.333333 768c35.413333 0 64-20.650667 64-55.978667V170.581333A63.978667 63.978667 0 0 0 853.333333 106.666667H170.666667C135.253333 106.666667 106.666667 135.253333 106.666667 170.581333v541.44C106.666667 747.285333 135.338667 768 170.666667 768h201.173333l110.016 117.44a42.752 42.752 0 0 0 60.586667 0.042667L651.904 768H853.333333z m-219.029333-42.666667h-6.250667l-115.797333 129.962667c-0.106667 0.106667-116.010667-129.962667-116.010667-129.962667H170.666667c-11.776 0-21.333333-1.621333-21.333334-13.312V170.581333A21.205333 21.205333 0 0 1 170.666667 149.333333h682.666666c11.776 0 21.333333 9.536 21.333334 21.248v541.44c0 11.754667-9.472 13.312-21.333334 13.312H634.304zM341.333333 490.666667a42.666667 42.666667 0 1 0 0-85.333334 42.666667 42.666667 0 0 0 0 85.333334z m170.666667 0a42.666667 42.666667 0 1 0 0-85.333334 42.666667 42.666667 0 0 0 0 85.333334z m170.666667 0a42.666667 42.666667 0 1 0 0-85.333334 42.666667 42.666667 0 0 0 0 85.333334z"
-                fill="#3D3D3D"
-                p-id="4573"
+                d="M709.12 395.2384c0-44.2112-34.56-80.3584-76.8-80.3584H102.4v344.6016C102.4 703.6672 136.96 739.84 179.2 739.84h76.8v154.9312a26.0352 26.0352 0 0 0 30.08 26.4704L320 885.76h3.5072L399.36 806.4h2.944L465.92 739.84h243.2z"
+                fill="#EE7C3D"
+                p-id="7745"
+              ></path>
+              <path
+                d="M839.68 184.32v473.6H430.8992l-24.192 25.3184L337.92 755.2v-97.28H184.32V184.32h655.36m5.12-81.92H179.2c-42.24 0-76.8 36.1472-76.8 80.3584v476.7232C102.4 703.6672 136.96 739.84 179.2 739.84h76.8v154.9312A26.1888 26.1888 0 0 0 281.8048 921.6a24.4992 24.4992 0 0 0 17.92-7.9104L465.92 739.84h378.88c42.24 0 76.8-36.1472 76.8-80.3328V182.7584C921.6 138.5472 887.04 102.4 844.8 102.4z"
+                fill="#515151"
+                p-id="7746"
+                data-spm-anchor-id="a313x.7781069.0.i2"
+                class="selected"
+              ></path>
+              <path
+                d="M327.68 384a40.96 40.96 0 1 0 40.96 40.96 40.96 40.96 0 0 0-40.96-40.96zM696.32 384a40.96 40.96 0 1 0 40.96 40.96 40.96 40.96 0 0 0-40.96-40.96zM512 384a40.96 40.96 0 1 0 40.96 40.96 40.96 40.96 0 0 0-40.96-40.96z"
+                fill="#333333"
+                p-id="7747"
               ></path>
             </svg>
-          </button>
+          </a>
         </div>
+        <div class="download" @click="download">下载</div>
       </div>
     </div>
     <!-- <comment></comment> -->
@@ -124,13 +146,12 @@
       </p>
     </div>
     <div>
-      <ul>
+      <ul id="comment">
         <comment :data="state.commentTree" @add-reply="addReply"></comment>
       </ul>
     </div>
     <!-- vue-qrcode 警告来源 -->
     <!-- <vue-qrcode :value="fileLink" /> -->
-    <canvas id="qrcode" width="200" height="200"></canvas>
   </div>
 </template>
 
@@ -156,6 +177,7 @@ const message = reactive({
   head_pic: "",
   user_id: store.state.user_id,
   user_name: "",
+  works_id: 0,
   works_date: "",
   works_mark: 0,
   works_name: "",
@@ -172,6 +194,12 @@ const state = reactive({
 const imageUrl = ref([]);
 
 const screenWidth = ref(0);
+
+const QRcode = ref(true);
+const HeadUrl = ref("");
+
+const strOne = ref("");
+const strTwo = ref("");
 
 // const fileLink = ref(
 //   `http://192.168.43.194:8080/showFile/${route.params.works_id}`
@@ -191,7 +219,7 @@ onMounted(async () => {
   await axios
     .get(`/api/getWork?works_id=${route.params.works_id}`)
     .then((res) => {
-      // console.log(res);
+      console.log(res);
       for (let key in res.data[0]) {
         message[key] = res.data[0][key]; // foo, bar
         // console.log(res.data[0][key]);
@@ -225,25 +253,42 @@ onMounted(async () => {
   // 调用绘制方法将二维码图案绘制到canvas上
   qr.drawCanvas();
 
-  setTimeout(() => {
-    const images = document.getElementsByClassName("img_watermark");
-    console.log(images);
-    let height = 0;
-    for (let i = 0; i < images.length; i++) {
-      height += images[i].offsetHeight;
-      // console.log(height);
-    }
-    console.log(height);
-    let width = images[0].offsetHeight;
-    let waterMarkOut = document.getElementById("waterMarkOut");
-    waterMarkOut.style.width = width;
-    waterMarkOut.style.height = height;
-    screenWidth.value = document.body.clientWidth;
+  // 获取水印内容
+  if (message.works_mark != 0) {
+    await axios
+      .get(`/api/getWaterMark?waterMark_works_id=${route.params.works_id}`)
+      .then((res) => {
+        console.log(res.data.data);
+        strOne.value = res.data.data[0].waterMark_name_one;
+        strTwo.value = res.data.data[0].waterMark_name_two;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
-    if (message.works_mark == 1) {
-      setWaterMark("qiujunwei", "王嘉尔");
-    }
+  setTimeout(() => {
+    render(strOne, strTwo);
   }, 200);
+  // setTimeout(() => {
+  //   const images = document.getElementsByClassName("img_watermark");
+  //   console.log(images);
+  //   let height = 0;
+  //   for (let i = 0; i < images.length; i++) {
+  //     height += images[i].offsetHeight;
+  //     // console.log(height);
+  //   }
+  //   console.log(height);
+  //   let width = images[0].offsetHeight;
+  //   let waterMarkOut = document.getElementById("waterMarkOut");
+  //   waterMarkOut.style.width = width;
+  //   waterMarkOut.style.height = height;
+  //   screenWidth.value = document.body.clientWidth;
+
+  //   if (message.works_mark == 1) {
+  //     // setWaterMark("qiujunwei");
+  //   }
+  // }, 200);
 
   //监听页面大小发生变化
   window.onresize = () => {
@@ -271,6 +316,16 @@ onMounted(async () => {
     });
 
   await axios
+    .get(`/api/getHead?user_id=${message.user_id}`)
+    .then((res) => {
+      console.log(res);
+      HeadUrl.value = `http://${store.state.netWork}:8081${res.data[0].head_pic}`;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  await axios
     .get(`/api/getCommentSet?works_id=${route.params.works_id}`)
     .then((res) => {
       // console.log(res);
@@ -291,7 +346,7 @@ watch(
   () => screenWidth.value,
   async (screenWidth, newscreenWidth) => {
     // console.log(screenWidth + " " + newscreenWidth);
-    await render();
+    await render(strOne, strTwo);
   }
 );
 
@@ -335,7 +390,7 @@ const collect = async () => {
   // }
 };
 
-const render = () => {
+const render = (strOne, strTwo) => {
   const images = document.getElementsByClassName("img_watermark");
   console.log(images);
   let height = 0;
@@ -350,8 +405,29 @@ const render = () => {
   waterMarkOut.style.height = height;
 
   if (message.works_mark == 1) {
-    setWaterMark("qiujunwei", "王嘉尔");
+    setWaterMark(strOne.value, strTwo.value);
   }
+};
+
+const download = () => {
+  axios
+    .get(`/api/downloadZip?work_id=${message.works_pic_id}`, {
+      responseType: "blob",
+    })
+    .then((response) => {
+      let blob = new Blob([response.data], { type: "application/zip" });
+      let url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      //重命名文件
+      link.download = "pic.zip";
+      link.click();
+      //释放内存
+      URL.revokeObjectURL(url);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 };
 
 const addComment = async () => {
@@ -417,6 +493,18 @@ const addReply = async (item, replyText) => {
     });
 };
 
+const showQR = () => {
+  let QR = document.querySelector(".QR");
+  // console.log(QR.style.display);
+  QR.classList.remove("active");
+};
+
+const hideQR = () => {
+  let QR = document.querySelector(".QR");
+  // console.log(QR.style.display);
+  QR.classList.add("active");
+};
+
 function formatTree(data) {
   const result = [];
   const map = [];
@@ -475,6 +563,9 @@ function getTime() {
   padding: 0;
   margin: 0;
   font-family: "Montserrat", sans-serif;
+  font-family: Alibaba Sans, -apple-system, BlinkMacSystemFont, Segoe UI,
+    PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Helvetica,
+    Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
 }
 
 .content_box {
@@ -510,24 +601,34 @@ function getTime() {
     display: flex;
     flex-direction: column;
     padding: 15px;
+    min-width: 200px;
+    max-width: 256px;
+    word-break: break-all;
 
     h3 {
-      font-size: 20px;
+      font-size: 30px;
       line-height: 30px;
       color: #1c1f23;
       margin-bottom: 0;
       font-weight: 400;
+      margin: 15px;
+      text-align: center;
     }
 
     .user_desc {
       padding: 10px;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
+      border-top: 1px solid rgba(30, 32, 35, 0.1);
+      border-bottom: 1px solid rgba(30, 32, 35, 0.1);
+      padding: 14px 0;
+      text-align: center;
+      font-size: 18px;
     }
 
     .btn_function {
       display: flex;
       margin: 5px;
+      margin-bottom: 2px;
+      justify-content: space-around;
 
       svg.active path {
         fill: #f4ea2a;
@@ -562,6 +663,73 @@ function getTime() {
         }
       }
     }
+
+    .download {
+      display: block;
+      color: #fff;
+      background: #1e80ff;
+      border: 0px solid;
+      margin: 2px;
+      min-width: 50px;
+      padding: 6px;
+      text-align: center;
+      margin-left: 10px;
+      border-radius: 4px;
+    }
+  }
+}
+
+.QR {
+  width: 280px;
+  height: 280px;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100000;
+  border-radius: 8px;
+
+  &.active {
+    display: none;
+  }
+
+  .cancel {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+
+    svg {
+      margin: 7px;
+    }
+  }
+
+  .canvas {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+.user_message {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 14px;
+  margin: 8px;
+  margin-top: 0px;
+
+  .headpid {
+    width: 26px;
+    height: 26px;
+    overflow: clip;
+    overflow: hidden;
+    box-sizing: border-box;
+    position: relative;
+    border-radius: 50%;
   }
 }
 

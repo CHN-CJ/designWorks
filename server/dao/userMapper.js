@@ -1,5 +1,7 @@
 module.exports = {
     //收藏功能
+    getWaterMark: "SELECT * FROM designworks.t_watermark WHERE waterMark_works_id = ?",
+    addwaterMark: "INSERT INTO designworks.t_watermark (waterMark_name_one, waterMark_name_two, waterMark_works_id) VALUES (?, ?, ?)",
     getCollectSet: "SELECT * FROM designworks.t_collectset WHERE user_id = ?",
     findCollect: "SELECT * FROM designworks.t_collect WHERE user_id = ? && works_id = ?",
     deleteCollect: "DELETE FROM designworks.t_collect WHERE user_id = ? && works_id = ?",

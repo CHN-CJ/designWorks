@@ -1,9 +1,45 @@
 let { pool } = require("../conf/db.config");
 let { addUser, findUsers, getWorkComment, addWorkId, addPicId, getPicId, addHead, getUserId,
     getAllPic, changeHead, getHead, getWork, getCommentSet, addComment, getMyWorks, deleteWork,
-    addWorks, addCollect, deleteCollect, findCollect, getCollectSet } = require('./userMapper');
+    addWorks, addCollect, deleteCollect, findCollect, getCollectSet, addwaterMark, getWaterMark } = require('./userMapper');
 
 module.exports = {
+    getWaterMark: function (params, callback) {
+        let sqlparam = [
+            params.waterMark_works_id
+        ];
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(getWaterMark, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("getWaterMark err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
+    addwaterMark: function (params, callback) {
+        let sqlparam = [
+            params.waterMark_name_one,
+            params.waterMark_name_two,
+            params.waterMark_works_id
+        ];
+        pool.getConnection((err, connection) => {
+            if (err) { throw err; };
+            connection.query(addwaterMark, sqlparam, function (error, result, fields) {
+                if (err) {
+                    connection.release();
+                    console.log("addwaterMark err");
+                    throw err;
+                }
+                callback({ code: 200, data: result });
+            })
+            connection.release();
+        })
+    },
     getCollectSet: function (params, callback) {
         let sqlparam = [params.user_id];
         pool.getConnection((err, connection) => {

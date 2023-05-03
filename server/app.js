@@ -34,6 +34,34 @@ app.all("*", function (req, res, next) {
         next();
 });
 
+app.get('/getWaterMark', (req, res) => {
+    let params = {
+        waterMark_works_id: req.query.waterMark_works_id
+    };
+    userDao.getWaterMark(params, r => {
+        if (r.code != 200) {
+            res.send('获取水印失败');
+            res.end();
+        } else {
+            res.send(r);
+            res.end();
+        }
+    })
+})
+
+app.post('/addwaterMark', (req, res) => {
+    let params = req.body;
+    userDao.addwaterMark(params, r => {
+        if (r.code != 200) {
+            res.send('获取水印失败');
+            res.end();
+        } else {
+            res.send(r);
+            res.end();
+        }
+    })
+})
+
 app.get('/getCollectSet', (req, res) => {
     let params = {
         user_id: req.query.user_id
