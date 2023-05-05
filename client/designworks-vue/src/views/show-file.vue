@@ -14,6 +14,7 @@
           v-for="(i, idx) in imageUrl"
           :key="idx"
           style="display: block"
+          @click="getColor(i)"
         />
       </div>
       <div
@@ -40,6 +41,7 @@
             ></path>
           </svg>
         </div>
+        <!-- qrcode 二维码 -->
         <div class="canvas">
           <canvas id="qrcode" width="200" height="200"></canvas>
         </div>
@@ -58,6 +60,28 @@
                 : "这个作者很懒，啥都没写"
             }}
           </p>
+        </div>
+        <h4 style="margin: 5px">创作者：</h4>
+        <div
+          style="
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            border-bottom: 1px solid rgba(30, 32, 35, 0.1);
+          "
+        >
+          <span
+            v-for="(item, idx) in owner"
+            :key="idx"
+            style="
+              margin: 5px;
+              color: #fff;
+              background-color: #000000;
+              padding: 2px;
+              border-radius: 4px;
+            "
+            >{{ item }}</span
+          >
         </div>
         <div class="btn_function">
           <svg
@@ -133,28 +157,39 @@
             </svg>
           </a>
         </div>
-        <div class="download" @click="download">下载</div>
+        <button class="download" @click="download">下载</button>
+        <!-- <div
+          class="bgc"
+          v-for="(i, idx) in bgc"
+          :key="idx"
+          style="width: 120px; height: 20px"
+        >
+          <div></div> bgc[idx].color
+        </div> -->
+        <div id="imageDataOne" class="imgbgc"></div>
+        <div id="imageDataTwo" class="imgbgc"></div>
+        <div id="imageDataThree" class="imgbgc"></div>
       </div>
     </div>
     <!-- <comment></comment> -->
-    <div>
+    <div class="commentParent">
       <p>
-        <textarea v-model="state.commentText"></textarea>
+        <textarea v-model="state.commentText" placeholder="唠点啥吧"></textarea>
       </p>
       <p>
-        <button @click="addComment">提交评论</button>
+        <button @click="addComment">提交</button>
       </p>
     </div>
-    <div>
+    <div class="showComment">
       <ul id="comment">
         <comment :data="state.commentTree" @add-reply="addReply"></comment>
       </ul>
     </div>
+    <!-- <button @click="getImgData">图片数据</button> -->
     <!-- vue-qrcode 警告来源 -->
     <!-- <vue-qrcode :value="fileLink" /> -->
   </div>
 </template>
-
 
 <script setup>
 // 二维码的链接形式不能是localhost
@@ -168,6 +203,8 @@ import { removeWatermark, setWaterMark } from "../common/watermark";
 import comment from "./comment.vue";
 import VueQrcode from "vue-qrcode";
 import UQRCode from "uqrcodejs";
+
+import analyze from "rgbaster";
 
 const router = useRouter();
 const route = useRoute();
@@ -200,6 +237,9 @@ const HeadUrl = ref("");
 
 const strOne = ref("");
 const strTwo = ref("");
+
+const bgc = ref([]);
+const owner = ref([]);
 
 // const fileLink = ref(
 //   `http://192.168.43.194:8080/showFile/${route.params.works_id}`
@@ -236,6 +276,17 @@ onMounted(async () => {
     );
   }
   console.log(imageUrl.value);
+
+  const download = document.querySelector(".download");
+  console.log(download);
+  if (message.works_mark != 0) {
+    download.disabled = true;
+    download.style.background = "#409EFF";
+    console.log(download.disabled);
+  }
+
+  owner.value = message.works_owner.split("#");
+  console.log(owner.value);
 
   var qr = new UQRCode();
   // 设置二维码内容
@@ -341,6 +392,36 @@ onMounted(async () => {
       console.log(err);
     });
 });
+
+// const getImgData = async () => {
+//   const result = await analyze(
+//     "http://172.20.10.13:8081/upload/223/223_0_62f51d42be7b86c1656d9bc5aef112834d0f73e63407c-04vH7s_fw658webp.webp"
+//   );
+//   console.log(result[0]);
+// };
+
+const getColor = async (url) => {
+  console.log(url);
+  bgc.value = [];
+  // const array = [];
+  const result = await analyze(
+    url,
+    { ignore: ["rgb(255,255,255)", "rgb(0,0,0)"] },
+    { scale: 0.6 }
+  );
+  for (let i = 0; i < 3; i++) {
+    // array.push(result[i]);
+    bgc.value.push(result[i]);
+  }
+  // bgc.value = array;
+  console.log(bgc.value);
+  const bgcOne = document.getElementById("imageDataOne");
+  bgcOne.style.background = `${bgc.value[0].color}`;
+  const bgcTwo = document.getElementById("imageDataTwo");
+  bgcTwo.style.background = `${bgc.value[1].color}`;
+  const bgcThree = document.getElementById("imageDataThree");
+  bgcThree.style.background = `${bgc.value[2].color}`;
+};
 
 watch(
   () => screenWidth.value,
@@ -673,8 +754,9 @@ function getTime() {
       min-width: 50px;
       padding: 6px;
       text-align: center;
-      margin-left: 10px;
+      // margin-left: 10px;
       border-radius: 4px;
+      margin-bottom: 15px;
     }
   }
 }
@@ -733,6 +815,10 @@ function getTime() {
   }
 }
 
+// .bgc {
+//   background-color: rgb(255, 179, 2);
+// }
+
 /*
 <svg t="1681271100939" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4048" width="200" height="200"><path d="M780.8 204.8c-83.2-44.8-179.2-19.2-243.2 44.8L512 275.2 486.4 249.6c-64-64-166.4-83.2-243.2-44.8C108.8 275.2 89.6 441.6 185.6 537.6l32 32 153.6 153.6 102.4 102.4c25.6 25.6 57.6 25.6 83.2 0l102.4-102.4 153.6-153.6 32-32C934.4 441.6 915.2 275.2 780.8 204.8z" fill="#d81e06" p-id="4049"></path></svg>
 */
@@ -751,5 +837,52 @@ function getTime() {
 //   transform: translate(-50%, -50%);
 //   z-index: 1000;
 // }
+
+.commentParent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  position: relative;
+
+  textarea {
+    // min-width: 186px;
+    width: 70vw;
+    border-radius: 7px;
+    border-color: #c9cdc0;
+    padding: 4px;
+  }
+
+  button {
+    margin-left: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 0px;
+    padding: 8px 13px;
+    color: #fff;
+    text-align: center;
+    background-color: #00aeec;
+  }
+}
+
+.showComment {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 75vw;
+  padding: 5px;
+  margin: 0 auto;
+  ul {
+    margin: 0px;
+    padding: 0px;
+    list-style: none;
+  }
+}
+
+.imgbgc {
+  width: 100%;
+  height: 40px;
+  // background-color: #1e80ff;
+}
 </style>
 

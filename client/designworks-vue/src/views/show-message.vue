@@ -1,20 +1,34 @@
 <template>
   <div>
-    <div>
-      <img :src="imageHead" class="imageHead" />
-    </div>
-    <el-upload
-      class="avatar-uploader"
-      :action="changeimageHead"
-      :show-file-list="false"
-      :on-success="handleAvatarSuccess"
-      :before-upload="beforeAvatarUpload"
-    >
-      更改头像
-      <!-- <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+    <div class="headPic">
+      <div>
+        <img :src="imageHead" class="imageHead" />
+      </div>
+      <el-upload
+        class="avatar-uploader"
+        :action="changeimageHead"
+        :show-file-list="false"
+        :on-success="handleAvatarSuccess"
+        :before-upload="beforeAvatarUpload"
+      >
+        更改头像
+        <!-- <img v-if="imageUrl" :src="imageUrl" class="avatar" />
       <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon> -->
-    </el-upload>
-    <div style="text-align: center; padding: 5px; width: 100vw">个人收藏</div>
+      </el-upload>
+    </div>
+    <div
+      style="
+        text-align: center;
+        padding: 5px;
+        width: 120px;
+        margin: 0 auto;
+        background-color: #000000;
+        color: #f7f9fa;
+        border-radius: 5px;
+      "
+    >
+      个人收藏
+    </div>
     <div class="MyCollect">
       <div
         v-for="(item, index) in state.MyCollect"
@@ -26,11 +40,25 @@
           :src="`http://localhost:8081/${item.works_pic_id}/${item.picName}`"
           alt=""
         />
-        <div class="WorkName">{{ item.works_name }}</div>
-        <div class="WorkDelete">取消收藏</div>
+        <div class="colName">{{ item.works_name }}</div>
+        <div class="colDelete" @click="cancelCollect(item.works_id)">
+          取消收藏
+        </div>
       </div>
     </div>
-    <div style="text-align: center; padding: 5px; width: 100vw">个人作品</div>
+    <div
+      style="
+        text-align: center;
+        padding: 5px;
+        width: 120px;
+        margin: 0 auto;
+        background-color: #000000;
+        color: #f7f9fa;
+        border-radius: 5px;
+      "
+    >
+      个人作品
+    </div>
     <div class="MyWorks">
       <div v-for="(item, index) in state.MyWorks" :key="index" class="WorksPic">
         <img
@@ -118,6 +146,29 @@ onMounted(async () => {
     });
 });
 
+const cancelCollect = async (works_id) => {
+  await axios
+    .post(
+      `/api/deleteCollect?user_id=${store.state.user_id}&works_id=${works_id}`
+    )
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+
+  await axios
+    .get(`/api/getCollectSet?user_id=${store.state.user_id}`)
+    .then((res) => {
+      console.log(res);
+      state.MyCollect = res.data;
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 const handleAvatarSuccess = async (response, uploadFile) => {
   console.log(response.originalname);
   console.log(uploadFile);
@@ -133,6 +184,7 @@ const handleAvatarSuccess = async (response, uploadFile) => {
     });
 
   imageHead.value = "http://localhost:8081" + fileName;
+  location.reload();
 };
 
 const deleteWork = async (works_id) => {
@@ -219,6 +271,15 @@ const beforeAvatarUpload = (rawFile) => {
   text-align: center;
 }
 
+.headPic {
+  width: 250px;
+  // display: flex;
+  // justify-content: flex-start;
+  // align-items: center;
+  // flex-direction: column;
+  padding: 20px;
+}
+
 .MyCollect {
   width: 100vw;
   display: flex;
@@ -234,6 +295,7 @@ const beforeAvatarUpload = (rawFile) => {
     margin: 20px;
     border-radius: 16px;
     position: relative;
+    box-shadow: 0 20px 30px -14px rgba(0, 0, 0, 0.25);
 
     img {
       width: 100%;
@@ -241,7 +303,7 @@ const beforeAvatarUpload = (rawFile) => {
       height: auto;
     }
 
-    .WorkName {
+    .colName {
       width: 100%;
       position: absolute;
       bottom: 5px;
@@ -253,11 +315,15 @@ const beforeAvatarUpload = (rawFile) => {
       // color: #fff;
     }
 
-    .WorkDelete {
+    .colDelete {
       width: 100%;
       position: absolute;
-      top: 5px;
+      top: 0px;
       text-align: center;
+      background: rgba(255, 255, 255, 0.09);
+      padding: 5px;
+      color: rgb(117, 117, 117);
+      cursor: pointer;
     }
   }
 }
@@ -279,6 +345,7 @@ const beforeAvatarUpload = (rawFile) => {
     margin: 20px;
     border-radius: 16px;
     position: relative;
+    box-shadow: 0 20px 20px -14px rgba(0, 0, 0, 0.25);
 
     img {
       width: 100%;
@@ -302,6 +369,7 @@ const beforeAvatarUpload = (rawFile) => {
       width: 100%;
       position: absolute;
       top: 5px;
+      cursor: pointer;
     }
   }
 }

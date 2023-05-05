@@ -8,6 +8,9 @@ const { pool } = require('./conf/db.config');
 const { getFileName, getTime } = require('./method');
 console.log(pool);
 
+const cors = require('cors');
+app.use(cors());
+
 // 文件上传下载中间件
 const multer = require('multer');
 const fs = require('fs');

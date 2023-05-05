@@ -19,9 +19,21 @@
           </el-select>
         </el-form-item>
         <el-form-item label="添加水印">
-          <el-switch v-model="form.delivery"></el-switch>
+          <el-tooltip
+            class="box-item"
+            effect="dark"
+            content="选择添加水印用户将无法下载"
+            placement="right-start"
+          >
+            <el-switch v-model="form.delivery"></el-switch>
+          </el-tooltip>
         </el-form-item>
-        <el-form :inline="true" :model="waterMark" class="demo-form-inline">
+        <el-form
+          :inline="true"
+          :model="waterMark"
+          class="demo-form-inline"
+          v-show="form.delivery"
+        >
           <el-form-item label="水印一">
             <el-input
               v-model="waterMark.name_one"
@@ -168,18 +180,20 @@ const onSubmit = async () => {
       console.log(err);
     });
 
-  await axios
-    .post("/api/addwaterMark", {
-      waterMark_name_one: waterMark.name_one,
-      waterMark_name_two: waterMark.name_two,
-      waterMark_works_id: works_id.value,
-    })
-    .then((res) => {
-      console.log(res.data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+  if (form.delivery) {
+    await axios
+      .post("/api/addwaterMark", {
+        waterMark_name_one: waterMark.name_one,
+        waterMark_name_two: waterMark.name_two,
+        waterMark_works_id: works_id.value,
+      })
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 };
 
 // 获取到 pic_name 表的 pic_id
